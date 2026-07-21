@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Heart, MessageSquare, Calendar, FolderOpen, ArrowLeft, Send, Sparkles, Plus, AlertCircle, X } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Blog, Comment } from '../types';
 
 interface BlogProps {
@@ -22,6 +23,40 @@ export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: Bl
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'Agri-Tech' | 'Computer Science' | 'Web Development'>('All');
   const [isLiking, setIsLiking] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Track page scroll for reading progress bar
+  useEffect(() => {
+    if (!selectedBlog) {
+      setScrollProgress(0);
+      return;
+    }
+
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      const scrollPosition = window.scrollY;
+      
+      const totalScroll = scrollHeight - clientHeight;
+      if (totalScroll > 0) {
+        const progress = (scrollPosition / totalScroll) * 100;
+        setScrollProgress(Math.min(100, Math.max(0, progress)));
+      } else {
+        setScrollProgress(0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    
+    // Initial calculation
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [selectedBlog]);
 
   // Fetch comments when a blog post is expanded
   useEffect(() => {
@@ -103,6 +138,14 @@ export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: Bl
   if (selectedBlog) {
     return (
       <section id="blog-details-section" className="py-24 px-6 max-w-4xl mx-auto">
+        {/* SCROLL PROGRESS BAR */}
+        <div className="fixed top-0 left-0 right-0 h-1 bg-zinc-100/50 z-50">
+          <motion.div 
+            className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 shadow-[0_0_8px_rgba(6,182,212,0.4)]"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+
         {/* BACK TO OVERVIEW */}
         <button
           onClick={() => setSelectedBlog(null)}
