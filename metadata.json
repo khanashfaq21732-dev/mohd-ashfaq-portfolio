@@ -1,0 +1,6 @@
+{
+  "name": "3D Animated Portfolio",
+  "description": "A luxury, full-stack interactive portfolio for Mohd. Ashfaq Khan with 3D canvas animations, CMS blogs, dynamic visitor analytics, and recruiter dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

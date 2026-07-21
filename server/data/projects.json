@@ -1,0 +1,81 @@
+[
+  {
+    "id": "dasheri-shield",
+    "title": "Agri-Tech Crop-Disease Monitoring System",
+    "description": "An advanced, highly-responsive digital monitoring system designed to protect mango plantations and local crops. Known as 'The Dasheri Shield', this platform was engineered during a high-intensity university hackathon to replace slow manual farm reporting with automated telemetry status tracking.",
+    "features": [
+      "Simulated live sensor telemetry: Monitored simulated soil moisture, ambient temperature, humidity, and Leaf Wetness Duration (LWD) metrics.",
+      "Optimized logging throughput: Engineered digital forms replacing handwritten logs, reducing record submission overhead by 30%.",
+      "Interactive crop-health dashboard: Rendered real-time situational charts and localized health alerts using SVG layouts.",
+      "Distinguished Hackathon Execution: Recognized as a finalist, placing in the top 15 out of 44 competing engineering teams."
+    ],
+    "technologies": [
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "Tailwind CSS",
+      "Express.js",
+      "Chart.js"
+    ],
+    "category": "Full Stack",
+    "status": "Completed",
+    "date": "2025-10",
+    "liveDemoUrl": "https://github.com/khanashfaq21732-dev",
+    "gitHubUrl": "https://github.com/khanashfaq21732-dev",
+    "imageUrl": "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=1200&q=80",
+    "caseStudy": "THE PROBLEM: Smallholder farmers in regional mango belts frequently lose up to 40% of seasonal yields to late-detected fungal infections like Anthracnose and Powdery Mildew. In current systems, monitoring is highly manual: scouts record leaf symptoms on paper sheets, which are physically sent to diagnostic centers, introducing a reporting latency of 3 to 7 days.\n\nTHE SOLUTION: 'The Dasheri Shield' eliminates this latency by digitizing farm monitoring at the source. We engineered a responsive web dashboard that simulates IoT sensor readings (temperature, soil moisture, humidity). Instead of waiting for physical mailings, field workers input plant anomalies directly into a lightweight mobile form. The dashboard parses inputs immediately and triggers color-coded status alerts (Green/Yellow/Red) when microclimate conditions indicate high disease susceptibility.\n\nKEY ACHIEVEMENTS: By shifting from physical to digital logging, we achieved a measurable 30% reduction in reporting overhead. The platform was built from scratch within 36 hours during our university hackathon and was ranked in the top 15 of 44 competing teams for its clear real-world utility and robust modular design.\n\nFUTURE ROADMAP: We aim to integrate low-power physical ESP32 microcontrollers and LoRaWAN gateways to replace simulated telemetry with real physical field sensors, enabling automatic real-time microclimate alerts directly in the field."
+  },
+  {
+    "id": "nextgen-3d-portfolio",
+    "title": "Cinematic 3D Portfolio Platform",
+    "description": "An elite, full-stack developer portfolio showcasing GPU-accelerated WebGL particle graphics, customizable glassmorphism user experiences, and a robust, highly-secured administrator console for complete content management.",
+    "features": [
+      "High-Performance 3D Scene: Rendered thousands of interactive WebGL particles responsive to cursor momentum and gravitational pull.",
+      "Full CMS Capabilities: Created intuitive interfaces for creating, editing, and deleting projects, technical blog posts, and certificates.",
+      "Real-Time Analytics Core: Logged referring paths, platform operating systems, browser profiles, and cumulative page views safely.",
+      "Rigid Session Protection: Guarded sensitive administrative actions behind double-secured JWT-based credentials and cookie-based access tokens."
+    ],
+    "technologies": [
+      "React.js",
+      "TypeScript",
+      "Three.js",
+      "Tailwind CSS",
+      "Express.js",
+      "Framer Motion",
+      "Recharts"
+    ],
+    "category": "Full Stack",
+    "status": "Completed",
+    "date": "2026-07",
+    "liveDemoUrl": "/",
+    "gitHubUrl": "https://github.com/khanashfaq21732-dev",
+    "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+    "caseStudy": "THE PROBLEM: Traditional developer resumes and portfolios are flat, text-heavy, and fail to immediately engage recruiters. Furthermore, static templates lack user management, forcing developers to manually write HTML code just to update simple projects or blog listings, while missing out on visitor telemetry insights.\n\nTHE SOLUTION: This portfolio addresses these bottlenecks by combining a high-performance 3D visual layer with an integrated Content Management System (CMS) and real-time analytics. The visual frontend utilizes a Three.js WebGL canvas to stream a living, interactive particle cloud, delivering a cinematic user experience without exhausting hardware. Behind this display lies a secure Express.js API proxy protecting administrators with stateless, secure cookies. The administration dashboard provides a unified control deck to publish blogs, update projects, approve/reject public comments, and view analytical user charts compiled by Recharts.\n\nKEY ACHIEVEMENTS: Engineered a complex 3D engine that achieves a lock-tight, fluid 60 frames per second (FPS) by using specialized GPU-backed BufferGeometry rather than updating raw DOM nodes. The server features rigid security controls: input validation, sanitization filters to prevent stored and reflective Cross-Site Scripting (XSS), and automated analytical compilation.\n\nFUTURE ROADMAP: We plan to integrate customizable drag-and-drop widget elements on the homepage, allowing guests to rearrange visual cards and choose custom color schemes dynamically."
+  },
+  {
+    "id": "ai-crop-analyzer",
+    "title": "AI Crop Disease Predictor",
+    "description": "An experimental, advanced AI-driven application leveraging Google Gemini Multimodal Vision API to diagnose botanical diseases from plant leaves, analyze infection severity, and generate structured organic remediation recipes.",
+    "features": [
+      "Multimodal Botanical Diagnosis: Analyzes leaf photos to isolate discolored spots, lesion patterns, and structural blight anomalies.",
+      "Structured Biological Recipes: Generates chemical-free treatments, organic compost formulations, and preventive spray timelines.",
+      "Historical Farmer Diary: Retains past image predictions with search filters to track botanical recovery rates over seasonal crops.",
+      "Robust Error Isolation: Gracefully manages API limits and bad imagery through intelligent fallback response schemas."
+    ],
+    "technologies": [
+      "React.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Express.js",
+      "Google GenAI",
+      "Markdown"
+    ],
+    "category": "AI",
+    "status": "Beta",
+    "date": "2026-05",
+    "liveDemoUrl": "https://github.com/khanashfaq21732-dev",
+    "gitHubUrl": "https://github.com/khanashfaq21732-dev",
+    "imageUrl": "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=1200&q=80",
+    "caseStudy": "THE PROBLEM: When crops exhibit physical anomalies, early-career farmers struggle to determine the underlying biological pathogen. Misidentifying Anthracnose as Downy Mildew often leads to the application of incorrect treatments, wasting capital on counterproductive chemical sprays while allowing the crop infection to spread.\n\nTHE SOLUTION: The AI Crop Disease Predictor bridges this expertise gap. By supplying high-definition photos of diseased leaf tissues, the system leverages the Gemini Vision models to analyze discoloration patterns. Rather than rendering vague summaries, the AI analyzes physical characteristics, estimates infection percentage, lists potential pathogens, and writes a step-by-step organic recipe for biological recovery.\n\nKEY ACHIEVEMENTS: Designed and integrated a clean React frontend and a secure Express proxy that communicates with the Google GenAI SDK. The backend processes the prompt instructions server-side to hide private API credentials, isolates empty or corrupt uploads gracefully, and streams parsed Markdown back to the user for an outstanding reading experience.\n\nFUTURE ROADMAP: We plan to compile this utility into a lightweight offline-first mobile app using Progressive Web App (PWA) specifications, storing local predictions in IndexedDB for farmers who have intermittent access to active cell towers."
+  }
+]
