@@ -66,7 +66,7 @@ export default function Gallery({ gallery, isAdmin, onDeleteGalleryItem }: Galle
             key={item.id}
             id={`gallery-item-${item.id}`}
             onClick={() => setSelectedItem(item)}
-            className="group rounded-2xl overflow-hidden border border-zinc-200 bg-white/80 backdrop-blur-md aspect-video shadow-sm hover:border-zinc-300 hover:-translate-y-1 hover:shadow-md transition-all duration-300 relative cursor-pointer"
+            className="group rounded-2xl overflow-hidden aspect-video relative cursor-pointer glass-panel glass-panel-hover"
           >
             <img
               src={item.url}
@@ -111,7 +111,7 @@ export default function Gallery({ gallery, isAdmin, onDeleteGalleryItem }: Galle
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-w-4xl w-full flex flex-col items-center bg-white border border-zinc-200 rounded-2xl overflow-hidden relative shadow-2xl text-zinc-800"
+            className="max-w-4xl w-full flex flex-col items-center rounded-2xl overflow-hidden relative text-zinc-800 glass-modal"
           >
             {/* Close */}
             <button

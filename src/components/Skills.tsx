@@ -67,7 +67,7 @@ export default function Skills({ skills }: SkillsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* LEFT COLUMN: GALAXY VIRTUAL CORE (THE ORBIT) */}
-        <div className="lg:col-span-1 flex flex-col items-center justify-center p-6 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-md h-full min-h-[380px] relative overflow-hidden shadow-sm">
+        <div className="lg:col-span-1 flex flex-col items-center justify-center p-6 rounded-2xl h-full min-h-[380px] relative overflow-hidden glass-panel">
           {/* Glowing central sphere */}
           <div className="absolute w-44 h-44 rounded-full bg-cyan-100/30 blur-[30px] animate-pulse" />
           
@@ -110,10 +110,10 @@ export default function Skills({ skills }: SkillsProps) {
                   id={`skill-card-${skill.id}`}
                   onMouseEnter={() => setHoveredSkill(skill)}
                   onMouseLeave={() => setHoveredSkill(null)}
-                  className={`p-4 rounded-xl border bg-white/70 backdrop-blur-sm transition-all duration-300 relative overflow-hidden group cursor-pointer ${
+                  className={`p-4 rounded-xl transition-all duration-300 relative overflow-hidden group cursor-pointer ${
                     isHovered 
-                      ? 'border-zinc-300 bg-white -translate-y-0.5 shadow-md' 
-                      : 'border-zinc-200/60 hover:border-zinc-300 shadow-sm'
+                      ? 'bg-white/60 border-zinc-300 -translate-y-0.5 shadow-md' 
+                      : 'glass-panel glass-panel-hover'
                   }`}
                 >
                   {/* Category Accent Stripe */}
@@ -148,7 +148,7 @@ export default function Skills({ skills }: SkillsProps) {
           {/* DYNAMIC METRIC DETAILS CALLOUT */}
           <div 
             id="skills-detail-panel"
-            className="p-5 rounded-xl border border-zinc-200 bg-white/80 backdrop-blur-md shadow-sm flex flex-col justify-center min-h-[96px] transition-all"
+            className="p-5 rounded-xl flex flex-col justify-center min-h-[96px] transition-all glass-panel"
           >
             {hoveredSkill ? (
               <div className="flex items-start gap-4">

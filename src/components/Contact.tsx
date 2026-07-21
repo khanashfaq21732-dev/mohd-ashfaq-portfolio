@@ -78,7 +78,7 @@ export default function Contact({ settings }: ContactProps) {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
         {/* LEFT COLUMN (CONTACT DATA & SOCIAL HANDLES) */}
         <div className="lg:col-span-2 flex flex-col gap-6 h-full justify-between">
-          <div className="p-6 rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col gap-6">
+          <div className="p-6 rounded-2xl flex flex-col gap-6 glass-panel">
             <h3 className="text-lg font-bold text-zinc-900">Direct Channels</h3>
             <p className="text-xs text-zinc-600 leading-relaxed font-sans">
               Reach out directly or save my digital contact card. I am actively looking for software developer internships and university collaborations.
@@ -131,7 +131,7 @@ export default function Contact({ settings }: ContactProps) {
           </div>
 
           {/* SIMULATED GOOGLE MAP */}
-          <div className="rounded-2xl border border-zinc-200 overflow-hidden aspect-video relative bg-zinc-50 mt-4 shadow-sm">
+          <div className="rounded-2xl overflow-hidden aspect-video relative mt-4 glass-panel">
             <div className="absolute inset-0 bg-zinc-50/90 flex flex-col items-center justify-center text-center p-4">
               <MapPin size={24} className="text-cyan-600 animate-bounce mb-2" />
               <span className="font-sans text-xs font-bold text-zinc-800 uppercase tracking-widest">SRMU Campus Lucknow</span>
@@ -178,7 +178,7 @@ export default function Contact({ settings }: ContactProps) {
 
           <form 
             onSubmit={handleSubmit}
-            className="p-6 sm:p-8 rounded-2xl border border-zinc-200 bg-white shadow-sm"
+            className="p-6 sm:p-8 rounded-2xl glass-panel"
           >
             <h3 className="text-base font-bold text-zinc-950 font-sans mb-6">Dissect Message Specifics</h3>
 
@@ -192,7 +192,7 @@ export default function Contact({ settings }: ContactProps) {
                   placeholder="e.g. Mohd. Ashfaq Khan"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
+                  className="w-full px-3.5 py-2.5 rounded-xl text-xs text-zinc-900 glass-input"
                 />
               </div>
               <div>
@@ -204,7 +204,7 @@ export default function Contact({ settings }: ContactProps) {
                   placeholder="e.g. khanashfaq21732@gmail.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
+                  className="w-full px-3.5 py-2.5 rounded-xl text-xs text-zinc-900 glass-input"
                 />
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function Contact({ settings }: ContactProps) {
                   placeholder="e.g. +91 6387046100"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
+                  className="w-full px-3.5 py-2.5 rounded-xl text-xs text-zinc-900 glass-input"
                 />
               </div>
               <div>
@@ -229,7 +229,7 @@ export default function Contact({ settings }: ContactProps) {
                   placeholder="e.g. University Tech / Google"
                   value={formData.company}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
+                  className="w-full px-3.5 py-2.5 rounded-xl text-xs text-zinc-900 glass-input"
                 />
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function Contact({ settings }: ContactProps) {
                 placeholder="e.g. B.Tech Internship Offer / Consultation Query"
                 value={formData.subject}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs text-zinc-900 glass-input"
                 />
             </div>
 
@@ -256,7 +256,7 @@ export default function Contact({ settings }: ContactProps) {
                 placeholder="Write your comprehensive queries, specs or collaboration descriptions..."
                 value={formData.message}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 resize-none"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs text-zinc-900 glass-input resize-none"
               />
             </div>
 

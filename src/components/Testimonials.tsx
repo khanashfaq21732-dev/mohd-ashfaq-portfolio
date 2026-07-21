@@ -51,7 +51,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
       {/* CAROUSEL SLIDER CARD DECK */}
       <div 
         id="testimonials-deck"
-        className="p-6 sm:p-10 rounded-2xl border border-zinc-200 bg-white shadow-sm hover:shadow-md relative overflow-hidden"
+        className="p-6 sm:p-10 rounded-2xl relative overflow-hidden glass-panel"
       >
         {/* Floating background quotation marks */}
         <Quote className="absolute -right-6 -bottom-6 text-zinc-100 w-44 h-44 -rotate-12 pointer-events-none" />

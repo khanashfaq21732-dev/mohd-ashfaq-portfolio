@@ -142,7 +142,7 @@ export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: Bl
         </div>
 
         {/* TYPOGRAPHY ARTICLE CONTENT */}
-        <article className="prose prose-zinc max-w-none text-zinc-800 text-sm leading-relaxed mb-12 bg-white border border-zinc-200 p-6 sm:p-8 rounded-2xl shadow-sm">
+        <article className="prose prose-zinc max-w-none text-zinc-800 text-sm leading-relaxed mb-12 p-6 sm:p-8 rounded-2xl glass-panel">
           {/* Simple paragraph/bullet rendering since we store raw content or simple markdown */}
           <div className="whitespace-pre-wrap flex flex-col gap-4 font-sans">
             {selectedBlog.content.split('\n\n').map((para, i) => {
@@ -206,7 +206,7 @@ export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: Bl
           </div>
 
           {/* ADD COMMENT FORM */}
-          <form onSubmit={handleCommentSubmit} className="p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <form onSubmit={handleCommentSubmit} className="p-5 rounded-2xl glass-panel">
             <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600 mb-4">Post a Critique</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
@@ -262,7 +262,7 @@ export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: Bl
       {/* FILTER PANEL */}
       <div 
         id="blog-controls"
-        className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-zinc-200 bg-white/80 backdrop-blur-md mb-10 shadow-sm"
+        className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl mb-10 glass-panel"
       >
         <div className="relative flex-1 w-full">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
@@ -302,7 +302,7 @@ export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: Bl
               key={blog.id}
               id={`blog-card-${blog.id}`}
               onClick={() => setSelectedBlog(blog)}
-              className="group rounded-2xl border border-zinc-200 bg-white/80 backdrop-blur-md overflow-hidden flex flex-col h-full shadow-sm hover:border-zinc-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative cursor-pointer"
+              className="group rounded-2xl overflow-hidden flex flex-col h-full relative cursor-pointer glass-panel glass-panel-hover"
             >
               <div className="h-44 w-full overflow-hidden relative bg-zinc-100 border-b border-zinc-200">
                 <img

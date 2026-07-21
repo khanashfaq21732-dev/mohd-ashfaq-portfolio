@@ -36,7 +36,7 @@ export default function Navbar({ activeSection, onNavigate, currentUser, onLogou
   return (
     <nav 
       id="main-navbar" 
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-6xl rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-6xl rounded-2xl px-4 py-3 transition-all duration-300 glass-navbar"
     >
       <div className="flex items-center justify-between">
         {/* LOGO */}

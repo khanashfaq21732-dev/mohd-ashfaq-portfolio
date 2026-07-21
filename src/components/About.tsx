@@ -36,7 +36,7 @@ export default function About({ experiences, onDownloadResume }: AboutProps) {
         <div className="lg:col-span-1">
           <div 
             id="about-bio-card"
-            className="sticky top-28 p-6 rounded-2xl border border-zinc-200 bg-white/80 backdrop-blur-md shadow-md flex flex-col gap-6"
+            className="sticky top-28 p-6 rounded-2xl flex flex-col gap-6 glass-panel"
           >
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-400 to-pink-500 p-[2px] shadow-sm flex-shrink-0">
@@ -95,7 +95,7 @@ export default function About({ experiences, onDownloadResume }: AboutProps) {
                   <div 
                     key={item.id}
                     id={`timeline-item-${item.id}`}
-                    className="relative p-5 rounded-xl border border-zinc-200 bg-white/70 backdrop-blur-md shadow-sm hover:border-zinc-300 hover:bg-white transition-all group"
+                    className="relative p-5 rounded-xl transition-all group glass-panel glass-panel-hover"
                   >
                     <div className="absolute -left-[27px] top-6 w-3 h-3 rounded-full bg-cyan-500 border-2 border-white group-hover:scale-125 transition-transform shadow" />
                     
@@ -133,7 +133,7 @@ export default function About({ experiences, onDownloadResume }: AboutProps) {
                   <div 
                     key={item.id}
                     id={`timeline-item-${item.id}`}
-                    className="relative p-5 rounded-xl border border-zinc-200 bg-white/70 backdrop-blur-md shadow-sm hover:border-zinc-300 hover:bg-white transition-all group"
+                    className="relative p-5 rounded-xl transition-all group glass-panel glass-panel-hover"
                   >
                     <div className="absolute -left-[27px] top-6 w-3 h-3 rounded-full bg-pink-500 border-2 border-white group-hover:scale-125 transition-transform shadow" />
                     
@@ -171,7 +171,7 @@ export default function About({ experiences, onDownloadResume }: AboutProps) {
                   <div 
                     key={item.id}
                     id={`timeline-item-${item.id}`}
-                    className="relative p-5 rounded-xl border border-zinc-200 bg-white/70 backdrop-blur-md shadow-sm hover:border-zinc-300 hover:bg-white transition-all group"
+                    className="relative p-5 rounded-xl transition-all group glass-panel glass-panel-hover"
                   >
                     <div className="absolute -left-[27px] top-6 w-3 h-3 rounded-full bg-amber-500 border-2 border-white group-hover:scale-125 transition-transform shadow" />
                     

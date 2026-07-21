@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 interface ThreeCanvasProps {
@@ -13,9 +13,26 @@ interface ThreeCanvasProps {
 export default function ThreeCanvas({ interactive = true }: ThreeCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const [webglSupported, setWebglSupported] = useState(true);
 
   useEffect(() => {
     if (!containerRef.current) return;
+
+    // Check WebGL availability first before attempting anything Three.js related
+    const isWebGLAvailable = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) {
+        return false;
+      }
+    };
+
+    if (!isWebGLAvailable()) {
+      console.warn("WebGL not supported or blocked by browser sandboxing. Falling back to ambient CSS Glassmorphic background.");
+      setWebglSupported(false);
+      return;
+    }
 
     const width = containerRef.current.clientWidth;
     const height = containerRef.current.clientHeight;
@@ -27,8 +44,20 @@ export default function ThreeCanvas({ interactive = true }: ThreeCanvasProps) {
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
     camera.position.z = 25;
 
-    // --- RENDERER SETUP ---
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    // --- RENDERER SETUP (SAFE WRAPPER) ---
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+      // Verify if context was actually obtained
+      if (!renderer.getContext()) {
+        throw new Error("WebGL context is null");
+      }
+    } catch (err) {
+      console.warn("WebGL Context not available or blocked. Falling back to ambient CSS Glassmorphic background.", err);
+      setWebglSupported(false);
+      return;
+    }
+
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -245,6 +274,23 @@ export default function ThreeCanvas({ interactive = true }: ThreeCanvasProps) {
       id="three-canvas-root" 
       ref={containerRef} 
       className="absolute inset-0 w-full h-full -z-10 pointer-events-none overflow-hidden bg-zinc-50" 
-    />
+    >
+      {/* Elegantly styled CSS Glassmorphic Fallback if WebGL fails */}
+      {!webglSupported && (
+        <div className="absolute inset-0 overflow-hidden bg-radial from-slate-50 via-zinc-100 to-zinc-200">
+          {/* Cyan blur ball */}
+          <div className="absolute top-[10%] left-[15%] w-80 h-80 rounded-full bg-cyan-200/40 blur-[90px] animate-pulse duration-[6000ms]" />
+          
+          {/* Pink blur ball */}
+          <div className="absolute bottom-[15%] right-[10%] w-96 h-96 rounded-full bg-pink-100/40 blur-[100px] animate-pulse duration-[8000ms]" />
+          
+          {/* Blue blur ball */}
+          <div className="absolute top-[45%] right-[25%] w-72 h-72 rounded-full bg-blue-150/30 blur-[80px] animate-pulse duration-[7000ms]" />
+          
+          {/* Abstract Grid Mesh Overlay */}
+          <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
+        </div>
+      )}
+    </div>
   );
 }

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search, ExternalLink, Github, Filter, Code2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, X, AlertCircle, Thermometer, Droplets, Activity, ShieldAlert, Sparkles, Database, UploadCloud, Check, Zap, Eye } from 'lucide-react';
+import { Search, ExternalLink, Github, Filter, Code2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, X, AlertCircle, Thermometer, Droplets, Activity, ShieldAlert, Sparkles, Database, UploadCloud, Check, Zap, Eye, BookOpen, Trophy, Cpu } from 'lucide-react';
 import { Project } from '../types';
 
 function DasheriShieldDashboard() {
@@ -29,6 +29,7 @@ function DasheriShieldDashboard() {
   const [humidity, setHumidity] = useState(78);
   const [lwd, setLwd] = useState(4.2);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [viewMode, setViewMode] = useState<'blueprint' | 'livecam'>('blueprint');
 
   const [observer, setObserver] = useState('');
   const [plot, setPlot] = useState('Plot D-4');
@@ -188,32 +189,76 @@ function DasheriShieldDashboard() {
       </div>
 
       {/* ORCHARD IoT FIELD TOPOLOGY */}
-      <div className="p-4 rounded-xl border border-zinc-200 bg-white/70 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5 items-center">
+      <div className="p-4 rounded-xl border border-zinc-200 bg-white/70 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5 items-center animate-fade-in">
         <div className="md:col-span-2 overflow-hidden rounded-lg border border-zinc-200 aspect-[16/9] relative bg-zinc-50 group">
           <img
-            src="/src/assets/images/dasheri_iot_grid_1784626704159.jpg"
-            alt="Dasheri Shield IoT Orchard Topology"
+            src={viewMode === 'blueprint' ? "/src/assets/images/dasheri_iot_grid_1784626704159.jpg" : "/src/assets/images/mango_farming_dashboard_1784627790898.jpg"}
+            alt={viewMode === 'blueprint' ? "Dasheri Shield IoT Orchard Topology" : "Mango Farming Orchard Feed"}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
           />
-          <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded text-[8px] font-mono font-bold text-cyan-700 bg-white/95 border border-cyan-200 flex items-center gap-1 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-            LIVE SENSOR GRID GEOMAP
+          <div className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded text-[8px] font-mono font-bold flex items-center gap-1 shadow-sm ${
+            viewMode === 'blueprint' ? 'text-cyan-700 bg-white/95 border border-cyan-200' : 'text-amber-800 bg-amber-50/95 border border-amber-200'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${viewMode === 'blueprint' ? 'bg-cyan-500' : 'bg-amber-500'}`} />
+            {viewMode === 'blueprint' ? 'LIVE SENSOR GRID GEOMAP' : 'LIVE ORCHARD CAM feed'}
           </div>
         </div>
         <div className="space-y-3.5">
-          <div>
-            <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 uppercase tracking-wider mb-2 inline-block">
-              Deployment Blueprint
-            </span>
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-1 flex items-center gap-1.5">
-              <Database size={13} />
-              Sensor Grid Topology
-            </h4>
-            <p className="text-[11px] text-zinc-500 leading-relaxed">
-              Wireless solar-powered IoT microclimate nodes are deployed across 12 sectors of the Dasheri orchard. They continuously stream temperature, moisture, and leaf wetness metrics directly to the centralized gateway to predict and mitigate disease loads before visible symptoms spread.
-            </p>
+          {/* Toggle Switches */}
+          <div className="flex items-center gap-1.5 bg-zinc-100/80 p-1 rounded-xl border border-zinc-200/50">
+            <button
+              type="button"
+              onClick={() => setViewMode('blueprint')}
+              className={`flex-1 py-1 rounded-lg text-[9px] font-mono font-black uppercase transition-all cursor-pointer ${
+                viewMode === 'blueprint'
+                  ? 'bg-white text-cyan-700 shadow-xs border border-zinc-200'
+                  : 'text-zinc-500 hover:text-zinc-800'
+              }`}
+            >
+              Blueprint Map
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('livecam')}
+              className={`flex-1 py-1 rounded-lg text-[9px] font-mono font-black uppercase transition-all cursor-pointer ${
+                viewMode === 'livecam'
+                  ? 'bg-white text-amber-700 shadow-xs border border-zinc-200'
+                  : 'text-zinc-500 hover:text-zinc-800'
+              }`}
+            >
+              Orchard Cam
+            </button>
           </div>
+
+          {viewMode === 'blueprint' ? (
+            <div>
+              <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-100 uppercase tracking-wider mb-1.5 inline-block">
+                Deployment Blueprint
+              </span>
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-1 flex items-center gap-1.5">
+                <Database size={13} />
+                Sensor Grid Topology
+              </h4>
+              <p className="text-[11px] text-zinc-500 leading-relaxed">
+                Wireless solar-powered IoT microclimate nodes are deployed across 12 sectors of the Dasheri orchard. They continuously stream temperature, moisture, and leaf wetness metrics directly to the centralized gateway to predict and mitigate disease loads before visible symptoms spread.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold text-amber-700 bg-amber-50 border border-amber-100 uppercase tracking-wider mb-1.5 inline-block">
+                Active Crop Feed
+              </span>
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-700 mb-1 flex items-center gap-1.5">
+                <Sparkles size={13} />
+                Dasheri Canopy Camera
+              </h4>
+              <p className="text-[11px] text-zinc-500 leading-relaxed">
+                Real-time optical monitoring of the foliage and ripening clusters. Our models analyze the structural canopy health, pigmentation levels, and crop yield forecasts in conjunction with live environmental logs.
+              </p>
+            </div>
+          )}
+
           <div className="space-y-1.5 font-mono text-[9px] text-zinc-600">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 size={11} className="text-emerald-500 flex-shrink-0" />
@@ -447,6 +492,7 @@ export default function Projects({ projects, isAdmin, onDeleteProject, onEditPro
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'React' | 'Node' | 'AI' | 'Full Stack' | 'UI'>('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [caseStudyProject, setCaseStudyProject] = useState<Project | null>(null);
 
   // Pagination bounds
   const itemsPerPage = 6;
@@ -544,8 +590,8 @@ export default function Projects({ projects, isAdmin, onDeleteProject, onEditPro
             <div
               key={project.id}
               id={`project-card-${project.id}`}
-              className="group rounded-2xl border border-zinc-200 bg-white/80 backdrop-blur-md overflow-hidden flex flex-col h-full shadow-sm hover:border-zinc-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative cursor-pointer"
-              onClick={() => setSelectedProject(project)}
+              className="group rounded-2xl overflow-hidden flex flex-col h-full relative cursor-pointer glass-panel glass-panel-hover"
+              onClick={() => setCaseStudyProject(project)}
             >
               {/* Image banner */}
               <div className="h-44 w-full overflow-hidden relative bg-zinc-100 border-b border-zinc-200">
@@ -593,9 +639,21 @@ export default function Projects({ projects, isAdmin, onDeleteProject, onEditPro
                   </div>
 
                   {/* Actions summary footer */}
-                  <div className="flex items-center justify-between border-t border-zinc-100 pt-3 mt-1 text-[11px] font-bold text-cyan-600 group-hover:text-cyan-700">
-                    <span>View Details & Specs</span>
-                    <ExternalLink size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <div className="flex items-center justify-between border-t border-zinc-100 pt-3 mt-1 gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => setCaseStudyProject(project)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold text-cyan-700 bg-cyan-50/70 border border-cyan-100 hover:bg-cyan-50 transition-colors cursor-pointer"
+                    >
+                      <BookOpen size={11} />
+                      View Case Study
+                    </button>
+                    <button
+                      onClick={() => setSelectedProject(project)}
+                      className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer"
+                    >
+                      <span>Details & Specs</span>
+                      <ExternalLink size={11} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -660,7 +718,7 @@ export default function Projects({ projects, isAdmin, onDeleteProject, onEditPro
           <div 
             id="project-detail-modal"
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-2xl relative max-h-[90vh] overflow-y-auto text-zinc-800"
+            className="w-full max-w-3xl rounded-2xl p-6 text-left relative max-h-[90vh] overflow-y-auto text-zinc-800 glass-modal"
           >
             {/* Close Button */}
             <button 
@@ -798,6 +856,197 @@ export default function Projects({ projects, isAdmin, onDeleteProject, onEditPro
           </div>
         </div>
       )}
+
+      {/* CASE STUDY MODAL */}
+      {caseStudyProject && (() => {
+        const parsed = parseCaseStudy(caseStudyProject.caseStudy);
+        return (
+          <div 
+            id="case-study-modal-root" 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4 animate-fade-in"
+            onClick={() => setCaseStudyProject(null)}
+          >
+            <div 
+              id="case-study-modal"
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-3xl rounded-2xl p-6 text-left relative max-h-[90vh] overflow-y-auto text-zinc-800 flex flex-col gap-6 glass-modal"
+            >
+              {/* Close Button */}
+              <button 
+                id="case-study-close-btn"
+                onClick={() => setCaseStudyProject(null)}
+                className="absolute top-4 right-4 p-1.5 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-xl transition-all cursor-pointer border border-zinc-200 shadow-xs bg-white"
+              >
+                <X size={18} />
+              </button>
+
+              {/* Title Header */}
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-100 uppercase tracking-wider">
+                    {caseStudyProject.category}
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-400">•</span>
+                  <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">
+                    {caseStudyProject.date}
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 font-sans">
+                  Case Study: {caseStudyProject.title}
+                </h3>
+              </div>
+
+              {/* Image Banner */}
+              <div className="h-56 w-full rounded-xl overflow-hidden relative border border-zinc-200 bg-zinc-100">
+                <img
+                  src={caseStudyProject.imageUrl}
+                  alt={caseStudyProject.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </div>
+
+              {/* Structured Retrospective Content */}
+              <div className="space-y-6">
+                {/* 1. Challenge */}
+                {parsed.challenge && (
+                  <div className="p-5 rounded-xl border border-rose-100 bg-rose-50/20 border-l-4 border-l-rose-500">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-rose-700 mb-2 flex items-center gap-1.5">
+                      <AlertCircle size={14} className="text-rose-500" />
+                      01 / The Challenge
+                    </h4>
+                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
+                      {parsed.challenge}
+                    </p>
+                  </div>
+                )}
+
+                {/* 2. Solution */}
+                {parsed.solution && (
+                  <div className="p-5 rounded-xl border border-cyan-100 bg-cyan-50/20 border-l-4 border-l-cyan-500">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-cyan-700 mb-2 flex items-center gap-1.5">
+                      <Cpu size={14} className="text-cyan-500" />
+                      02 / The Solution
+                    </h4>
+                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
+                      {parsed.solution}
+                    </p>
+                  </div>
+                )}
+
+                {/* 3. Outcome */}
+                {parsed.outcome && (
+                  <div className="p-5 rounded-xl border border-emerald-100 bg-emerald-50/10 border-l-4 border-l-emerald-500">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 mb-2 flex items-center gap-1.5">
+                      <Trophy size={14} className="text-emerald-500" />
+                      03 / The Outcome & Achievements
+                    </h4>
+                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
+                      {parsed.outcome}
+                    </p>
+                  </div>
+                )}
+
+                {/* 4. Roadmap */}
+                {parsed.roadmap && (
+                  <div className="p-5 rounded-xl border border-violet-100 bg-violet-50/10 border-l-4 border-l-violet-500">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-violet-700 mb-2 flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-violet-500" />
+                      04 / Future Vision & Roadmap
+                    </h4>
+                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
+                      {parsed.roadmap}
+                    </p>
+                  </div>
+                )}
+
+                {/* Fallback Text if non-structured */}
+                {parsed.fallbackText && (
+                  <div className="p-5 rounded-xl border border-zinc-200 bg-zinc-50/50">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-600 mb-2 flex items-center gap-1.5">
+                      <BookOpen size={14} />
+                      Project Retrospective Case Study
+                    </h4>
+                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed whitespace-pre-line">
+                      {parsed.fallbackText}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons Footer */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-zinc-100 pt-5 mt-2">
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black ${
+                    caseStudyProject.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                  }`}>
+                    {caseStudyProject.status}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <button
+                    onClick={() => {
+                      setSelectedProject(caseStudyProject);
+                      setCaseStudyProject(null);
+                    }}
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-zinc-600 hover:text-zinc-900 bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-all cursor-pointer"
+                  >
+                    <Activity size={13} />
+                    Interactive Specs & Sandbox
+                  </button>
+                  
+                  <button
+                    onClick={() => setCaseStudyProject(null)}
+                    className="flex-1 sm:flex-initial flex items-center justify-center px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-sm transition-all cursor-pointer"
+                  >
+                    Done Reading
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
     </section>
   );
+}
+
+// --- CASE STUDY PARSER HELPERS ---
+interface ParsedCaseStudy {
+  challenge?: string;
+  solution?: string;
+  outcome?: string;
+  roadmap?: string;
+  fallbackText?: string;
+}
+
+function parseCaseStudy(text?: string): ParsedCaseStudy {
+  if (!text) return {};
+  
+  const result: ParsedCaseStudy = {};
+  
+  // Find sections
+  const problemRegex = /(?:THE PROBLEM|CHALLENGE):?([\s\S]*?)(?=(?:THE SOLUTION|SOLUTION|KEY ACHIEVEMENTS|OUTCOME|FUTURE ROADMAP|$))/i;
+  const solutionRegex = /(?:THE SOLUTION|SOLUTION):?([\s\S]*?)(?=(?:THE PROBLEM|CHALLENGE|KEY ACHIEVEMENTS|OUTCOME|FUTURE ROADMAP|$))/i;
+  const outcomeRegex = /(?:KEY ACHIEVEMENTS|OUTCOME):?([\s\S]*?)(?=(?:THE PROBLEM|CHALLENGE|THE SOLUTION|SOLUTION|FUTURE ROADMAP|$))/i;
+  const roadmapRegex = /(?:FUTURE ROADMAP|ROADMAP):?([\s\S]*?)(?=(?:THE PROBLEM|CHALLENGE|THE SOLUTION|SOLUTION|KEY ACHIEVEMENTS|OUTCOME|$))/i;
+
+  const problemMatch = text.match(problemRegex);
+  const solutionMatch = text.match(solutionRegex);
+  const outcomeMatch = text.match(outcomeRegex);
+  const roadmapMatch = text.match(roadmapRegex);
+
+  if (problemMatch) result.challenge = problemMatch[1].trim();
+  if (solutionMatch) result.solution = solutionMatch[1].trim();
+  if (outcomeMatch) result.outcome = outcomeMatch[1].trim();
+  if (roadmapMatch) result.roadmap = roadmapMatch[1].trim();
+
+  if (!problemMatch && !solutionMatch && !outcomeMatch) {
+    result.fallbackText = text;
+  }
+
+  return result;
 }
