@@ -1,0 +1,57 @@
+[
+  {
+    "id": "building-dasheri-shield",
+    "title": "Building 'The Dasheri Shield' at University Hackathon",
+    "slug": "building-dasheri-shield",
+    "excerpt": "The technical story of how our team built an Agri-Tech prototype, automated crop health diagnostics, and placed in the top 15 out of 44 teams.",
+    "content": "## The Challenge\nAt our university hackathon, we were faced with a critical theme: **Sustainable Technology**. Our team decided to focus on agriculture, specifically crop health monitoring.\n\n## The Technical Architecture\nWe engineered a modular web prototype using HTML5, CSS3, and JavaScript. The system simulates live crop sensor feeds and logs agricultural changes.\n\n### Optimization\nOne of our main achievements was replacing slow manual logs with dynamic, automated forms, saving about **30% in logging efficiency**. This meant faster diagnostic updates.\n\n## The Presentation\nCompeting against 44 university teams was intense, but our robust solution structure secured us a position in the **top 15 teams**.",
+    "category": "Agri-Tech",
+    "tags": [
+      "Hackathon",
+      "AgriTech",
+      "JavaScript",
+      "Success"
+    ],
+    "likes": 32,
+    "commentsCount": 2,
+    "publishedDate": "2025-10-24",
+    "imageUrl": "/src/assets/images/mango_farming_dashboard_1784627790898.jpg",
+    "isFeatured": true
+  },
+  {
+    "id": "mastering-dsa-python",
+    "title": "Mastering Data Structures with Python and C",
+    "slug": "mastering-dsa-python",
+    "excerpt": "Insights from a Computer Science undergrad on balancing lower-level memory management in C with clean OOP design in Python.",
+    "content": "## The Foundation of Computer Science\nAs a B.Tech CSE student at Shri Ramswaroop Memorial University, building a strong core in Data Structures and Algorithms (DSA) is essential.\n\n### Why C and Python?\n- **C Programming** forces you to understand memory addresses, pointers, and manual structures (like singly-linked lists).\n- **Python** allows quick algorithmic testing, rapid prototyping of arrays, trees, and graphs.\n\n## Practical Tips\n1. Always trace your pointers on paper first.\n2. Study big-O time and space complexity for every loop.\n3. Solve interactive debugging challenges regularly to hone your analytical reflexes.",
+    "category": "Computer Science",
+    "tags": [
+      "C",
+      "Python",
+      "DSA",
+      "Algorithms"
+    ],
+    "likes": 24,
+    "commentsCount": 1,
+    "publishedDate": "2026-04-12",
+    "imageUrl": "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "ui-animation-tricks",
+    "title": "Creating High-End UI Animations with Canvas and CSS",
+    "slug": "ui-animation-tricks",
+    "excerpt": "Learn how to build elite, high-performance web animations that look luxury and cinematic without stalling user interactions.",
+    "content": "## Cinematic Web Design\nAwwwards portfolios stand out because of interaction. However, heavy animation can cause page sluggishness.\n\n### Our Approach\n- **Canvas particles**: Render 1000s of dust nodes in a single WebGL paint call rather than polluting the DOM with 1000s of HTML tags.\n- **CSS 3D Transforms**: Leverage GPU-accelerated layout positioning for interactive tilt containers.\n- **Framer Motion**: Group staggered transitions for text block reveals.\n\nBy ensuring calculations are lightweight and responsive, we keep visual elements fluid at a lock-tight **60 FPS**.",
+    "category": "Web Development",
+    "tags": [
+      "UI",
+      "Animation",
+      "ThreeJS",
+      "CSS"
+    ],
+    "likes": 19,
+    "commentsCount": 0,
+    "publishedDate": "2026-07-15",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"
+  }
+]

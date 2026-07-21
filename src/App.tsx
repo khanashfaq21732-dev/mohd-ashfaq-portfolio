@@ -15,6 +15,7 @@ import Gallery from './components/Gallery';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import AdminDashboard from './components/AdminDashboard';
+import SubscribeForm from './components/SubscribeForm';
 import { Project, Blog, Skill, Experience, Testimonial, GalleryItem, SystemSettings } from './types';
 import { Sparkles, Terminal } from 'lucide-react';
 
@@ -253,13 +254,18 @@ export default function App() {
       )}
 
       {/* FOOTER CREDENTIALS */}
-      <footer id="portfolio-main-footer" className="py-12 border-t border-zinc-200 bg-white/70 text-center font-sans text-[11px] text-zinc-500 z-10 relative">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} Mohd. Ashfaq Khan. Dedicated to crafting practical software solutions.</p>
-          <div className="flex items-center gap-3">
-            <span className="text-cyan-600">● React & Tailwind CSS</span>
-            <span>● Node.js Platform</span>
+      <footer id="portfolio-main-footer" className="py-12 border-t border-zinc-200 bg-white/70 font-sans text-[11px] text-zinc-500 z-10 relative">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col gap-2 text-left max-w-sm">
+            <p className="font-bold text-zinc-800 text-xs">Mohd. Ashfaq Khan</p>
+            <p>© {new Date().getFullYear()} Mohd. Ashfaq Khan. Dedicated to crafting practical software solutions.</p>
+            <div className="flex items-center gap-3 mt-1 text-[10px]">
+              <span className="text-cyan-600">● React & Tailwind CSS</span>
+              <span>● Node.js Platform</span>
+            </div>
           </div>
+          
+          <SubscribeForm />
         </div>
       </footer>
 

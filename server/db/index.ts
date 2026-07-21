@@ -15,7 +15,8 @@ import {
   GalleryItem, 
   ContactMessage, 
   VisitorLog, 
-  SystemSettings 
+  SystemSettings,
+  Subscriber
 } from '../../src/types';
 
 const DATA_DIR = path.join(process.cwd(), 'server', 'data');
@@ -82,7 +83,7 @@ const defaultProjects: Project[] = [
     date: "2025-10",
     liveDemoUrl: "https://github.com/khanashfaq21732-dev",
     gitHubUrl: "https://github.com/khanashfaq21732-dev",
-    imageUrl: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/src/assets/images/mango_farming_dashboard_1784627790898.jpg",
     caseStudy: "THE PROBLEM: Smallholder farmers in regional mango belts frequently lose up to 40% of seasonal yields to late-detected fungal infections like Anthracnose and Powdery Mildew. In current systems, monitoring is highly manual: scouts record leaf symptoms on paper sheets, which are physically sent to diagnostic centers, introducing a reporting latency of 3 to 7 days.\n\nTHE SOLUTION: 'The Dasheri Shield' eliminates this latency by digitizing farm monitoring at the source. We engineered a responsive web dashboard that simulates IoT sensor readings (temperature, soil moisture, humidity). Instead of waiting for physical mailings, field workers input plant anomalies directly into a lightweight mobile form. The dashboard parses inputs immediately and triggers color-coded status alerts (Green/Yellow/Red) when microclimate conditions indicate high disease susceptibility.\n\nKEY ACHIEVEMENTS: By shifting from physical to digital logging, we achieved a measurable 30% reduction in reporting overhead. The platform was built from scratch within 36 hours during our university hackathon and was ranked in the top 15 of 44 competing teams for its clear real-world utility and robust modular design.\n\nFUTURE ROADMAP: We aim to integrate low-power physical ESP32 microcontrollers and LoRaWAN gateways to replace simulated telemetry with real physical field sensors, enabling automatic real-time microclimate alerts directly in the field."
   },
   {
@@ -137,7 +138,7 @@ const defaultBlogs: Blog[] = [
     likes: 32,
     commentsCount: 2,
     publishedDate: "2025-10-24",
-    imageUrl: "https://images.unsplash.com/photo-1492496913980-50134c30ad78?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/src/assets/images/mango_farming_dashboard_1784627790898.jpg",
     isFeatured: true
   },
   {
@@ -332,6 +333,7 @@ class LocalDatabase {
   analytics: VisitorLog[];
   settings: SystemSettings;
   users: any[];
+  subscribers: Subscriber[];
 
   constructor() {
     this.projects = readJsonFile<Project[]>('projects.json', defaultProjects);
@@ -344,6 +346,7 @@ class LocalDatabase {
     this.messages = readJsonFile<ContactMessage[]>('messages.json', []);
     this.analytics = readJsonFile<VisitorLog[]>('analytics.json', []);
     this.settings = readJsonFile<SystemSettings>('settings.json', defaultSettings);
+    this.subscribers = readJsonFile<Subscriber[]>('subscribers.json', []);
     
     // Seed default admin account
     // Password: "AdminPassword123!" hashed with a simple indicator
@@ -555,6 +558,16 @@ class LocalDatabase {
   addUser(u: any) {
     this.users.push(u);
     writeJsonFile('users.json', this.users);
+  }
+
+  // --- Subscribers ---
+  getSubscribers() { return this.subscribers; }
+  addSubscriber(s: Subscriber) {
+    this.subscribers.push(s);
+    writeJsonFile('subscribers.json', this.subscribers);
+  }
+  getSubscriberByEmail(email: string) {
+    return this.subscribers.find(sub => sub.email.toLowerCase() === email.toLowerCase());
   }
 }
 

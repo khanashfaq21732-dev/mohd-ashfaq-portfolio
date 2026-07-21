@@ -489,6 +489,45 @@ router.delete('/contact/messages/:id', requireAuth('admin'), (req, res) => {
   res.json({ success: true });
 });
 
+// --- SUBSCRIBERS ENDPOINTS ---
+router.post('/subscribers', (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: "Email address is required" });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: "Invalid email address format" });
+  }
+
+  const sanitizedEmail = email.trim().toLowerCase().substring(0, 150);
+
+  const existing = db.getSubscriberByEmail(sanitizedEmail);
+  if (existing) {
+    return res.status(409).json({ error: "This email is already subscribed!" });
+  }
+
+  const newSubscriber = {
+    id: "sub-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
+    email: sanitizedEmail,
+    subscribedAt: new Date().toISOString()
+  };
+
+  db.addSubscriber(newSubscriber);
+
+  console.log(`[SMTP SIMULATOR] Dispatching welcome confirmation email to ${sanitizedEmail}!`);
+
+  res.json({
+    success: true,
+    message: "Subscription successful! You have been registered for newsletter and portfolio updates.",
+    data: newSubscriber
+  });
+});
+
+router.get('/subscribers', requireAuth('admin'), (req, res) => {
+  res.json(db.getSubscribers());
+});
+
 // Bind routing under /api prefix
 app.use('/api', router);
 

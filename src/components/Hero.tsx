@@ -67,6 +67,17 @@ export default function Hero({ onNavigate, onDownloadResume, settings }: HeroPro
         Available for Internships & Projects
       </div>
 
+      {/* PORTRAIT IMAGE */}
+      <div className="relative mb-6 group select-none">
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-400 to-pink-500 opacity-25 blur-md group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+        <img
+          src="/src/assets/images/user_profile_photo_1784629749234.jpg"
+          alt="Mohd. Ashfaq Khan"
+          referrerPolicy="no-referrer"
+          className="relative w-28 h-36 md:w-32 md:h-40 rounded-2xl object-cover object-top border-2 border-white shadow-md bg-white"
+        />
+      </div>
+
       {/* MAIN NAME DISPLAY */}
       <h1 
         id="hero-name"

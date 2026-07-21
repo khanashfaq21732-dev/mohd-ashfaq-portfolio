@@ -108,3 +108,10 @@ export interface SystemSettings {
   linkedin: string;
   resumeUrl: string;
 }
+
+export interface Subscriber {
+  id: string;
+  email: string;
+  subscribedAt: string;
+}
+

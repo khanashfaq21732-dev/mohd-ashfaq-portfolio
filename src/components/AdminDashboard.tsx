@@ -35,11 +35,12 @@ export default function AdminDashboard({
   const [email, setEmail] = useState('khanashfaq21732@gmail.com');
   const [password, setPassword] = useState('AdminPassword123!');
   const [loginError, setLoginError] = useState('');
-  const [activeTab, setActiveTab] = useState<'analytics' | 'projects' | 'blogs' | 'messages' | 'settings'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'projects' | 'blogs' | 'messages' | 'settings' | 'subscribers'>('analytics');
 
   // Analytics states
   const [analytics, setAnalytics] = useState<any>(null);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [subscribers, setSubscribers] = useState<any[]>([]);
   
   // Editor CRUD states
   const [isEditingProject, setIsEditingProject] = useState<boolean>(false);
@@ -71,6 +72,16 @@ export default function AdminDashboard({
       .then(res => res.json())
       .then(data => setMessages(data))
       .catch(err => console.error("Error fetching messages:", err));
+
+    // Fetch subscribers
+    fetch('/api/subscribers')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setSubscribers(data);
+        }
+      })
+      .catch(err => console.error("Error fetching subscribers:", err));
   }, [currentUser, activeTab]);
 
   const handleSignInSubmit = async (e: React.FormEvent) => {
@@ -413,6 +424,15 @@ export default function AdminDashboard({
           >
             <Settings size={14} />
             Settings Profile
+          </button>
+          <button
+            onClick={() => setActiveTab('subscribers')}
+            className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer ${
+              activeTab === 'subscribers' ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
+            }`}
+          >
+            <Users size={14} />
+            Subscribers ({subscribers.length})
           </button>
         </div>
 
@@ -993,6 +1013,50 @@ export default function AdminDashboard({
                 Apply System Overrides
               </button>
             </form>
+          )}
+
+          {/* TAB 6: SUBSCRIBERS */}
+          {activeTab === 'subscribers' && (
+            <div className="p-5 rounded-2xl border border-zinc-200 bg-white shadow-xs">
+              <div className="flex items-center justify-between border-b border-zinc-100 pb-3 mb-4">
+                <div>
+                  <h3 className="text-sm font-sans font-black text-zinc-900">Newsletter Subscribers</h3>
+                  <p className="text-[10px] font-mono text-cyan-600 uppercase tracking-widest mt-0.5">Audience & Subscribers Collection</p>
+                </div>
+                <div className="text-[10px] font-mono px-2 py-1 rounded-full bg-cyan-50 border border-cyan-100 text-cyan-700 font-bold">
+                  Total: {subscribers.length}
+                </div>
+              </div>
+
+              {subscribers.length === 0 ? (
+                <div className="text-center py-12 text-zinc-400 font-mono text-xs">
+                  No active subscribers found in database collection.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-zinc-200 text-zinc-400 font-mono text-[10px] uppercase">
+                        <th className="py-2.5 font-bold">ID</th>
+                        <th className="py-2.5 font-bold">Email Address</th>
+                        <th className="py-2.5 font-bold">Subscribed Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-100">
+                      {subscribers.map((sub, index) => (
+                        <tr key={sub.id || index} className="hover:bg-zinc-50/50">
+                          <td className="py-2.5 font-mono text-[10px] text-zinc-400">{sub.id}</td>
+                          <td className="py-2.5 font-bold text-zinc-700">{sub.email}</td>
+                          <td className="py-2.5 text-zinc-500 font-sans">
+                            {new Date(sub.subscribedAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           )}
 
         </div>
