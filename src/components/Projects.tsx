@@ -4,7 +4,21 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search, ExternalLink, Github, Filter, Code2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, X, AlertCircle, Thermometer, Droplets, Activity, ShieldAlert, Sparkles, Database, UploadCloud, Check, Zap, Eye, BookOpen, Trophy, Cpu } from 'lucide-react';
+import { Search, ExternalLink, Github, Filter, Code2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, X, AlertCircle, Thermometer, Droplets, Activity, ShieldAlert, Sparkles, Database, UploadCloud, Check, Zap, Eye, BookOpen, Trophy, Cpu, Radio, BarChart3, TrendingUp, RefreshCw } from 'lucide-react';
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  LineChart, 
+  Line, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend 
+} from 'recharts';
 import { Project } from '../types';
 import dasheriIotGridImg from '../assets/images/dasheri_iot_grid_1784626704159.jpg';
 import mangoFarmingDashImg from '../assets/images/mango_farming_dashboard_1784627790898.jpg';
@@ -32,6 +46,22 @@ function DasheriShieldDashboard() {
   const [lwd, setLwd] = useState(4.2);
   const [isStreaming, setIsStreaming] = useState(false);
   const [viewMode, setViewMode] = useState<'blueprint' | 'livecam'>('blueprint');
+  const [chartTab, setChartTab] = useState<'telemetry' | 'trends' | 'plots'>('telemetry');
+
+  const [telemetryHistory, setTelemetryHistory] = useState([
+    { time: '10:00:00', temp: 29.8, moisture: 48, humidity: 72, lwd: 3.8, threat: 12 },
+    { time: '10:00:05', temp: 30.2, moisture: 46, humidity: 74, lwd: 4.0, threat: 15 },
+    { time: '10:00:10', temp: 30.8, moisture: 45, humidity: 75, lwd: 4.1, threat: 18 },
+    { time: '10:00:15', temp: 31.2, moisture: 43, humidity: 77, lwd: 4.2, threat: 22 },
+    { time: '10:00:20', temp: 31.5, moisture: 42, humidity: 78, lwd: 4.2, threat: 25 },
+  ]);
+
+  const plotComparisonData = [
+    { name: 'Plot D-4 (Dasheri)', temp: 31.5, moisture: 42, threat: 15, nodes: 4 },
+    { name: 'Plot A-2 (Chausa)', temp: 33.1, moisture: 38, threat: 42, nodes: 3 },
+    { name: 'Plot B-1 (Langra)', temp: 29.4, moisture: 55, threat: 8, nodes: 3 },
+    { name: 'Plot F-9 (Kesar)', temp: 32.0, moisture: 40, threat: 28, nodes: 2 },
+  ];
 
   const [observer, setObserver] = useState('');
   const [plot, setPlot] = useState('Plot D-4');
@@ -47,14 +77,35 @@ function DasheriShieldDashboard() {
     let interval: any;
     if (isStreaming) {
       interval = setInterval(() => {
-        setTemp(prev => +(prev + (Math.random() - 0.5) * 0.4).toFixed(1));
-        setMoisture(prev => Math.min(100, Math.max(0, Math.round(prev + (Math.random() - 0.5) * 3))));
-        setHumidity(prev => Math.min(100, Math.max(0, Math.round(prev + (Math.random() - 0.5) * 2))));
-        setLwd(prev => +(Math.max(0, prev + (Math.random() - 0.5) * 0.2)).toFixed(1));
+        const nextTemp = +(temp + (Math.random() - 0.5) * 0.4).toFixed(1);
+        const nextMoisture = Math.min(100, Math.max(0, Math.round(moisture + (Math.random() - 0.5) * 3)));
+        const nextHumidity = Math.min(100, Math.max(0, Math.round(humidity + (Math.random() - 0.5) * 2)));
+        const nextLwd = +(Math.max(0, lwd + (Math.random() - 0.5) * 0.2)).toFixed(1);
+        const calculatedThreat = Math.min(100, Math.max(5, Math.round((nextHumidity * 0.3) + (nextLwd * 7) + (nextTemp * 0.2))));
+
+        setTemp(nextTemp);
+        setMoisture(nextMoisture);
+        setHumidity(nextHumidity);
+        setLwd(nextLwd);
+
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+
+        setTelemetryHistory(prev => {
+          const updated = [...prev, {
+            time: timeStr,
+            temp: nextTemp,
+            moisture: nextMoisture,
+            humidity: nextHumidity,
+            lwd: nextLwd,
+            threat: calculatedThreat
+          }];
+          return updated.slice(-12);
+        });
       }, 1500);
     }
     return () => clearInterval(interval);
-  }, [isStreaming]);
+  }, [isStreaming, temp, moisture, humidity, lwd]);
 
   const handleScan = () => {
     setIsScanning(true);
@@ -187,6 +238,141 @@ function DasheriShieldDashboard() {
           </div>
           <p className="text-lg font-mono font-black text-zinc-800">{lwd} hrs</p>
           <span className="text-[9px] text-zinc-400 font-mono">LWD Threshold: 8.0</span>
+        </div>
+      </div>
+
+      {/* REAL-TIME RECHARTS TELEMETRY VISUALIZER */}
+      <div className="p-4 rounded-xl border border-zinc-200 bg-white/80 shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-600">
+              <TrendingUp size={16} />
+            </div>
+            <div>
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
+                <span>Real-Time Sensor Telemetry Stream</span>
+                {isStreaming && (
+                  <span className="flex items-center gap-1 text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                    LIVE
+                  </span>
+                )}
+              </h4>
+              <p className="text-[10px] text-zinc-500 font-mono">
+                Responsive IoT node telemetry feeds plotted over time via Recharts
+              </p>
+            </div>
+          </div>
+
+          {/* Tab Switcher & Animated Signal Indicator */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200/80">
+              <button
+                type="button"
+                onClick={() => setChartTab('telemetry')}
+                className={`px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase transition-all cursor-pointer ${
+                  chartTab === 'telemetry'
+                    ? 'bg-white text-cyan-700 shadow-xs border border-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-900'
+                }`}
+              >
+                Telemetry Stream
+              </button>
+              <button
+                type="button"
+                onClick={() => setChartTab('trends')}
+                className={`px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase transition-all cursor-pointer ${
+                  chartTab === 'trends'
+                    ? 'bg-white text-rose-700 shadow-xs border border-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-900'
+                }`}
+              >
+                Disease Risk Index
+              </button>
+              <button
+                type="button"
+                onClick={() => setChartTab('plots')}
+                className={`px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase transition-all cursor-pointer ${
+                  chartTab === 'plots'
+                    ? 'bg-white text-blue-700 shadow-xs border border-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-900'
+                }`}
+              >
+                Sector Comparison
+              </button>
+            </div>
+
+            {/* Animated SVG Signal Node Icon */}
+            <div className="hidden md:flex items-center gap-1.5 text-zinc-400 font-mono text-[9px]" title="LoRaWAN Signal Active">
+              <div className="relative flex items-center justify-center w-5 h-5">
+                <svg className="w-5 h-5 text-cyan-500 animate-spin" style={{ animationDuration: '6s' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2a10 10 0 0 1 10 10" strokeDasharray="3 3" />
+                  <path d="M12 6a6 6 0 0 1 6 6" strokeDasharray="2 2" />
+                </svg>
+                <Radio size={10} className="absolute text-cyan-600" />
+              </div>
+              <span className="text-cyan-700 font-bold">915MHz LoRa</span>
+            </div>
+          </div>
+        </div>
+
+        {/* CHART CONTENT AREA */}
+        <div className="w-full h-56 pt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            {chartTab === 'telemetry' ? (
+              <AreaChart data={telemetryHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="tempGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.35}/>
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0}/>
+                  </linearGradient>
+                  <linearGradient id="moistureGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
+                  </linearGradient>
+                  <linearGradient id="humidityGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.35}/>
+                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
+                <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 100]} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
+                <Area type="monotone" dataKey="temp" name="Temp (°C)" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#tempGradient)" />
+                <Area type="monotone" dataKey="moisture" name="Soil Moisture (%)" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#moistureGradient)" />
+                <Area type="monotone" dataKey="humidity" name="Air Humidity (%)" stroke="#a855f7" strokeWidth={2} fillOpacity={1} fill="url(#humidityGradient)" />
+              </AreaChart>
+            ) : chartTab === 'trends' ? (
+              <LineChart data={telemetryHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
+                <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 100]} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
+                <Line type="monotone" dataKey="threat" name="Disease Risk Index (%)" stroke="#f43f5e" strokeWidth={2.5} dot={{ r: 3, fill: '#f43f5e' }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="lwd" name="Leaf Wetness (hrs)" stroke="#ec4899" strokeWidth={2} strokeDasharray="4 4" />
+              </LineChart>
+            ) : (
+              <BarChart data={plotComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
+                <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 60]} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
+                <Bar dataKey="temp" name="Ambient Temp (°C)" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="moisture" name="Soil Moisture (%)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="threat" name="Threat Load (%)" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
         </div>
       </div>
 
