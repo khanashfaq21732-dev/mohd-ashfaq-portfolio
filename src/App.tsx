@@ -194,13 +194,14 @@ export default function App() {
         ].map((section, idx) => (
           <motion.div
             key={section.id}
-            initial={{ opacity: 0, y: 45 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
+            viewport={{ once: true, margin: "-80px" }}
+            style={{ willChange: "transform, opacity" }}
             transition={{ 
-              duration: 0.65, 
-              delay: (idx % 3) * 0.12, 
-              ease: [0.21, 0.47, 0.32, 0.98] 
+              duration: 0.6, 
+              delay: (idx % 2) * 0.08, 
+              ease: [0.16, 1, 0.3, 1] 
             }}
           >
             {section.divider}
