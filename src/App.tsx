@@ -68,7 +68,10 @@ export default function App() {
     loadPortfolioData();
 
     // 2. Validate current auth session
-    fetch('/api/auth/me')
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const authHeaders: Record<string, string> = storedToken ? { 'Authorization': `Bearer ${storedToken}` } : {};
+
+    fetch('/api/auth/me', { headers: authHeaders })
       .then(res => res.json())
       .then(data => {
         if (data.user) {

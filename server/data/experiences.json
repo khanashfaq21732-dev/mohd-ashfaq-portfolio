@@ -1,0 +1,66 @@
+[
+  {
+    "id": "exp-hackathon",
+    "role": "Agri-Tech Solution Architect (Hackathon Project Lead)",
+    "company": "University Sustainable Tech Hackathon",
+    "location": "SRMU Campus",
+    "period": "Oct 2025",
+    "description": [
+      "Designed and presented a real-world Agri-Tech crop solution under competitive timelines.",
+      "Engineered 'The Dasheri Shield' prototype, integrating dynamic state simulation for crop infections.",
+      "Digitized farm record listings, saving approximately 30% of logging overhead for crop managers.",
+      "Coordinated with team members on modular design patterns, leading to top 15 out of 44 team ranking."
+    ],
+    "type": "work"
+  },
+  {
+    "id": "edu-btech",
+    "role": "B.Tech in Computer Science & Engineering",
+    "company": "Shri Ramswaroop Memorial University (SRMU)",
+    "location": "Lucknow, India",
+    "period": "2023 - Expected 2027",
+    "description": [
+      "Acquiring solid theoretical foundation in Computer Science, Database Management, and Networking.",
+      "Consistently practicing DSA (Data Structures and Algorithms) to strengthen problem-solving speed.",
+      "Maintaining an active CGPA of 6.54/10.",
+      "Participating in collaborative coding projects and tech hackathons."
+    ],
+    "type": "education"
+  },
+  {
+    "id": "edu-xii",
+    "role": "Class XII (ISC)",
+    "company": "S.T. Dominic Savio College",
+    "location": "Lucknow, India",
+    "period": "Completed 2023",
+    "description": [
+      "Focused on Physics, Chemistry, and Mathematics.",
+      "Graduated with 57%."
+    ],
+    "type": "education"
+  },
+  {
+    "id": "edu-x",
+    "role": "Class X (CISCE)",
+    "company": "S.T. Dominic Savio College",
+    "location": "Lucknow, India",
+    "period": "Completed 2021",
+    "description": [
+      "Studied general secondary subjects.",
+      "Graduated with 71.4%."
+    ],
+    "type": "education"
+  },
+  {
+    "id": "achieve-hackathon",
+    "role": "Ranked Top 15 of 44 Teams",
+    "company": "University Hackathon Competition",
+    "location": "SRMU Campus",
+    "period": "2025",
+    "description": [
+      "Honored as finalist from over 44 university teams.",
+      "Presented working crop tracking architecture before a panel of industry mentors."
+    ],
+    "type": "achievement"
+  }
+]

@@ -57,24 +57,32 @@ export default function AdminDashboard({
 
   const [settingsForm, setSettingsForm] = useState<SystemSettings>({ ...settings });
 
+  // Auth header generator helper
+  const getAuthHeaders = (): Record<string, string> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
+
   // Load admin panels data on authentication
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'admin') return;
 
+    const headers = getAuthHeaders();
+
     // Fetch analytical summaries
-    fetch('/api/analytics/summary')
+    fetch('/api/analytics/summary', { headers })
       .then(res => res.json())
       .then(data => setAnalytics(data))
       .catch(err => console.error("Error fetching logs:", err));
 
     // Fetch contact messages
-    fetch('/api/contact/messages')
+    fetch('/api/contact/messages', { headers })
       .then(res => res.json())
       .then(data => setMessages(data))
       .catch(err => console.error("Error fetching messages:", err));
 
     // Fetch subscribers
-    fetch('/api/subscribers')
+    fetch('/api/subscribers', { headers })
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -95,7 +103,10 @@ export default function AdminDashboard({
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
-      if (res.ok) {
+      if (res.ok && data.user) {
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+        }
         onLogin(data.user);
       } else {
         setLoginError(data.error || "Login credentials rejected.");
@@ -105,13 +116,23 @@ export default function AdminDashboard({
     }
   };
 
+  const handleLogoutAction = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', headers: getAuthHeaders() });
+    } catch (e) {
+      console.error(e);
+    }
+    localStorage.removeItem('auth_token');
+    onLogout();
+  };
+
   // --- CRUD: PROJECTS ---
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await fetch('/api/projects', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(projectForm)
       });
       if (res.ok) {
@@ -126,7 +147,7 @@ export default function AdminDashboard({
   const handleDeleteProject = async (id: string) => {
     if (!confirm("Delete this project from database?")) return;
     try {
-      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      await fetch(`/api/projects/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
       onReloadData();
     } catch (e) {
       console.error(e);
@@ -155,7 +176,7 @@ export default function AdminDashboard({
     try {
       const res = await fetch('/api/blogs', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(blogForm)
       });
       if (res.ok) {
@@ -170,7 +191,7 @@ export default function AdminDashboard({
   const handleDeleteBlog = async (id: string) => {
     if (!confirm("Delete this article from database?")) return;
     try {
-      await fetch(`/api/blogs/${id}`, { method: 'DELETE' });
+      await fetch(`/api/blogs/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
       onReloadData();
     } catch (e) {
       console.error(e);
@@ -197,7 +218,7 @@ export default function AdminDashboard({
   // --- ACTIONS: MESSAGES & SETTINGS ---
   const handleMarkMessageRead = async (id: string) => {
     try {
-      await fetch(`/api/contact/messages/${id}/read`, { method: 'POST' });
+      await fetch(`/api/contact/messages/${id}/read`, { method: 'POST', headers: getAuthHeaders() });
       setMessages(messages.map(m => m.id === id ? { ...m, isRead: true } : m));
     } catch (e) {
       console.error(e);
@@ -206,7 +227,7 @@ export default function AdminDashboard({
 
   const handleDeleteMessage = async (id: string) => {
     try {
-      await fetch(`/api/contact/messages/${id}`, { method: 'DELETE' });
+      await fetch(`/api/contact/messages/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
       setMessages(messages.filter(m => m.id !== id));
     } catch (e) {
       console.error(e);
@@ -218,7 +239,7 @@ export default function AdminDashboard({
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(settingsForm)
       });
       if (res.ok) {
@@ -355,7 +376,7 @@ export default function AdminDashboard({
 
         <div className="flex items-center gap-3">
           <button
-            onClick={onLogout}
+            onClick={handleLogoutAction}
             className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 hover:text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 border border-zinc-200 rounded-xl transition-all cursor-pointer shadow-sm"
           >
             <LogOut size={12} />

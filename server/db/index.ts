@@ -245,7 +245,7 @@ const defaultExperiences: Experience[] = [
   },
   {
     id: "edu-xii",
-    role: "Class XII (ICSE)",
+    role: "Class XII (ISC)",
     company: "S.T. Dominic Savio College",
     location: "Lucknow, India",
     period: "Completed 2023",

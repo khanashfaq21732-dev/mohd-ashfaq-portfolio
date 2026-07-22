@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Cpu, Terminal, Layers, Wrench, Sparkles } from 'lucide-react';
 import { Skill } from '../types';
