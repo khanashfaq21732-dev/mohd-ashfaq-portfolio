@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohd. Ashfaq Khan - Resume</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #18181b;
+      background-color: #f4f4f5;
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+    .resume-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 3rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e4e4e7;
+    }
+    header {
+      text-align: center;
+      padding-bottom: 1.25rem;
+      border-bottom: 2px solid #27272a;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: #09090b;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .contact-info {
+      font-size: 0.875rem;
+      color: #3f3f46;
+      font-weight: 500;
+    }
+    .contact-info a {
+      color: #0284c7;
+      text-decoration: none;
+    }
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+    section {
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #18181b;
+      border-bottom: 1px solid #e4e4e7;
+      padding-bottom: 0.35rem;
+      margin-bottom: 0.75rem;
+    }
+    p, li {
+      font-size: 0.875rem;
+      color: #3f3f46;
+    }
+    .summary {
+      line-height: 1.6;
+      text-align: justify;
+    }
+    .competencies {
+      line-height: 1.6;
+      font-weight: 500;
+    }
+    .job-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #09090b;
+    }
+    .job-subtitle {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: #52525b;
+      margin-bottom: 0.5rem;
+    }
+    ul {
+      list-style-type: disc;
+      padding-left: 1.25rem;
+      margin-top: 0.35rem;
+    }
+    li {
+      margin-bottom: 0.35rem;
+      line-height: 1.5;
+    }
+    .education-item, .achievement-item {
+      margin-bottom: 0.5rem;
+    }
+    .print-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+      transition: all 0.2s ease;
+    }
+    .print-btn:hover {
+      background: #0369a1;
+      transform: translateY(-2px);
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .resume-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="resume-container">
+    <header>
+      <h1>MOHD. ASHFAQ KHAN</h1>
+      <div class="contact-info">
+        +91-6387046100 &nbsp;|&nbsp; 
+        <a href="mailto:khanashfaq21732@gmail.com">khanashfaq21732@gmail.com</a> &nbsp;|&nbsp; 
+        <a href="https://linkedin.com" target="_blank">LinkedIn</a> &nbsp;|&nbsp; 
+        <a href="https://github.com/khanashfaq21732-dev" target="_blank">GitHub</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>Professional Summary</h2>
+      <p class="summary">
+        Computer Science undergraduate (B.Tech, expected 2027) with foundational skills in C and Python, and hands-on frontend development experience using HTML5, CSS3, and JavaScript. Built and presented a full working prototype — an Agri-Tech crop-monitoring and inventory system — that ranked top 15 of 44 teams at a university hackathon. Actively strengthening Data Structures & Algorithms and problem-solving ability, with a demonstrated track record of converting academic concepts into functioning, real-world applications. Seeking an entry-level software or frontend development role, or internship, to apply and grow these skills in a production environment.
+      </p>
+    </section>
+
+    <section>
+      <h2>Core Competencies</h2>
+      <p class="competencies">
+        C Programming • Python • HTML5 • CSS3 • JavaScript • Data Structures & Algorithms (DSA) • Responsive Web Design • Modular Programming • VS Code • Google Colab • Problem Solving • Debugging • Frontend Development • Web Application Prototyping
+      </p>
+    </section>
+
+    <section>
+      <h2>Projects</h2>
+      
+      <div style="margin-bottom: 1.25rem;">
+        <div class="job-title">
+          <span>Agri-Tech System – Dasheri Shield (AamRakshak)</span>
+        </div>
+        <div class="job-subtitle">Mobile-first web application for crop disease identification and direct marketplace sales</div>
+        <ul>
+          <li>Engineered a mobile-first frontend web app (HTML5, CSS3, Vanilla JS ES6+) for small-scale farmers in the Malihabad mango-farming belt, optimized for 2G/3G low-bandwidth networks.</li>
+          <li>Implemented simulated Edge AI disease detection module with localized UI feedback and client-side inventory shelf-life risk alerts.</li>
+          <li>Integrated bilingual (English/Hindi) high-contrast interface and direct farmer-to-buyer <code>tel:</code> marketplace links bypassing intermediaries.</li>
+          <li>Placed in top 15 of 44 competing teams in a university hackathon for solution design and accessibility impact.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="job-title">
+          <span>Personal Portfolio Website – AI Studio, Next.js, React.js, Tailwind CSS</span>
+        </div>
+        <div class="job-subtitle">AI-assisted personal portfolio and project showcase website</div>
+        <ul>
+          <li>Developed a modern, fully responsive personal portfolio website using AI Studio, Next.js, React.js, and Tailwind CSS to showcase projects, technical skills, achievements, certifications, and professional experience.</li>
+          <li>Designed an interactive, mobile-first user interface with reusable React components, smooth navigation, and responsive layouts for seamless cross-device compatibility.</li>
+          <li>Leveraged AI-assisted development workflows and modern UI tools to accelerate development while maintaining high code quality, accessibility, SEO, and optimized performance.</li>
+          <li>Integrated project showcase, resume, GitHub, LinkedIn, and contact sections to establish a professional online presence.</li>
+        </ul>
+        <p style="font-size: 0.8rem; color: #0284c7; margin-top: 0.25rem; font-weight: 500;">
+          Portfolio URL: https://ai.studio/apps/c1988ea7-c380-4757-8937-5c7736f7562e?fullscreenApplet=true
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Technical Development</h2>
+      <ul>
+        <li>Actively practicing Data Structures & Algorithms to strengthen problem-solving ability.</li>
+        <li>Participated in university-level hackathons and collaborative coding projects.</li>
+        <li>Continuously learning backend fundamentals and system design concepts.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Education</h2>
+      <div class="education-item">
+        <strong>B.Tech in Computer Science</strong> — Shri Ramswaroop Memorial University (Expected 2027), CGPA: 6.54/10
+      </div>
+      <div class="education-item">
+        <strong>Class XII (ISC)</strong> — S.T. Dominic Savio College — 57%
+      </div>
+      <div class="education-item">
+        <strong>Class X (CISCE)</strong> — S.T. Dominic Savio College — 71.4%
+      </div>
+    </section>
+
+    <section>
+      <h2>Achievements</h2>
+      <ul>
+        <li>Ranked top 15 out of 44 teams in University Hackathon Competition.</li>
+        <li>Developed and presented a real-world Agri-Tech solution under competitive timelines.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Additional Interests</h2>
+      <p>Video editing and content creation; enjoys applying creative and communication skills alongside technical work.</p>
+    </section>
+  </div>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Save as PDF / Print</button>
+
+</body>
+</html>

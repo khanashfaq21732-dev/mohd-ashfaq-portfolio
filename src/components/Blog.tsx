@@ -1,425 +1,212 @@
 'use client';
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import React, { useState } from 'react';
+import { BookOpen, Calendar, Clock, Search, Tag, Sparkles, X, Terminal } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
-import React, { useState, useEffect } from 'react';
-import { Search, Heart, MessageSquare, Calendar, FolderOpen, ArrowLeft, Send, Sparkles, Plus, AlertCircle, X } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Blog, Comment } from '../types';
-
-interface BlogProps {
-  blogs: Blog[];
-  isAdmin: boolean;
-  onDeleteBlog?: (id: string) => void;
-  onEditBlog?: (b: Blog) => void;
+interface BlogPost {
+  id: string;
+  title: string;
+  date: string;
+  readTime: string;
+  excerpt: string;
+  category: string;
+  techStack: string[];
 }
 
-export default function BlogCMS({ blogs, isAdmin, onDeleteBlog, onEditBlog }: BlogProps) {
-  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [commentName, setCommentName] = useState('');
-  const [commentText, setCommentText] = useState('');
+export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'All' | 'Agri-Tech' | 'Computer Science' | 'Web Development'>('All');
-  const [isLiking, setIsLiking] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [selectedTag, setSelectedTag] = useState<string>('All');
 
-  // Track page scroll for reading progress bar
-  useEffect(() => {
-    if (!selectedBlog) {
-      setScrollProgress(0);
-      return;
+  const posts: BlogPost[] = [
+    {
+      id: 'dasheri-shield-article',
+      title: "Building Dasheri Shield: IoT Sensors for Precision Agriculture",
+      date: "2026-06-15",
+      readTime: "5 min read",
+      excerpt: "How we leveraged ESP32 microcontrollers, LoRaWAN wireless telemetry, and real-time disease forecasting algorithms to protect mango orchards from anthracnose and mildew.",
+      category: "Agri-Tech & IoT",
+      techStack: ["ESP32", "LoRaWAN", "Python", "IoT", "Sensors", "Recharts"]
+    },
+    {
+      id: 'web-architecture-article',
+      title: "Why Modern Web Dev Needs Clean Modular Architecture",
+      date: "2026-05-20",
+      readTime: "4 min read",
+      excerpt: "Key learnings from building high-performance full-stack applications with React, TypeScript, and serverless Node APIs with zero-dependency bloat.",
+      category: "Software Engineering",
+      techStack: ["React", "TypeScript", "Node.js", "Tailwind CSS", "Architecture"]
+    },
+    {
+      id: 'sensor-telemetry-article',
+      title: "Micro-Climate Telemetry: Processing Low-Level Sensor Streams",
+      date: "2026-04-10",
+      readTime: "6 min read",
+      excerpt: "Algorithmic approaches to signal filtering, threshold detection, and low-power microcontroller state loops in agricultural field deployments.",
+      category: "Embedded Systems",
+      techStack: ["C Programming", "Embedded C", "Microcontrollers", "Data Structures", "DSP"]
     }
+  ];
 
-    const handleScroll = () => {
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = document.documentElement.clientHeight;
-      const scrollPosition = window.scrollY;
-      
-      const totalScroll = scrollHeight - clientHeight;
-      if (totalScroll > 0) {
-        const progress = (scrollPosition / totalScroll) * 100;
-        setScrollProgress(Math.min(100, Math.max(0, progress)));
-      } else {
-        setScrollProgress(0);
-      }
-    };
+  // Extract all unique tech tags across all posts
+  const allTags = ['All', ...Array.from(new Set(posts.flatMap(p => [p.category, ...p.techStack])))];
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-    
-    // Initial calculation
-    handleScroll();
+  // Filter posts by title, category, or technology stack
+  const filteredPosts = posts.filter(post => {
+    const query = searchQuery.toLowerCase().trim();
+    const matchesQuery = query === '' || 
+      post.title.toLowerCase().includes(query) ||
+      post.excerpt.toLowerCase().includes(query) ||
+      post.category.toLowerCase().includes(query) ||
+      post.techStack.some(tech => tech.toLowerCase().includes(query));
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [selectedBlog]);
+    const matchesTag = selectedTag === 'All' || 
+      post.category === selectedTag || 
+      post.techStack.includes(selectedTag);
 
-  // Fetch comments when a blog post is expanded
-  useEffect(() => {
-    if (!selectedBlog) return;
-    
-    fetch(`/api/blogs/${selectedBlog.id}/comments`)
-      .then(res => res.json())
-      .then(data => setComments(data))
-      .catch(err => console.error("Error fetching comments:", err));
-  }, [selectedBlog]);
-
-  const handleLike = async (e: React.MouseEvent, blogId: string) => {
-    e.stopPropagation();
-    if (isLiking) return;
-    setIsLiking(true);
-
-    try {
-      const res = await fetch(`/api/blogs/${blogId}/like`, { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        if (selectedBlog && selectedBlog.id === blogId) {
-          setSelectedBlog({ ...selectedBlog, likes: data.likes });
-        }
-        // Also update in parent state list if necessary, but we can update local copy
-        const blog = blogs.find(b => b.id === blogId);
-        if (blog) blog.likes = data.likes;
-      }
-    } catch (err) {
-      console.error("Error liking blog:", err);
-    } finally {
-      setIsLiking(false);
-    }
-  };
-
-  const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedBlog || !commentName.trim() || !commentText.trim()) return;
-
-    try {
-      const res = await fetch(`/api/api/blogs/${selectedBlog.id}/comments` /* Support both base paths */, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userName: commentName, content: commentText })
-      }).then(r => r.ok ? r : fetch(`/api/blogs/${selectedBlog.id}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userName: commentName, content: commentText })
-      }));
-
-      const data = await res.json();
-      if (data.success) {
-        setComments([...comments, data.comment]);
-        setCommentText('');
-        
-        // Update comments count locally
-        selectedBlog.commentsCount = (selectedBlog.commentsCount || 0) + 1;
-        const blog = blogs.find(b => b.id === selectedBlog.id);
-        if (blog) blog.commentsCount = selectedBlog.commentsCount;
-      }
-    } catch (err) {
-      console.error("Error submitting comment:", err);
-    }
-  };
-
-  // Filters & Search
-  const filteredBlogs = blogs.filter((blog) => {
-    const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          blog.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesCategory = selectedCategory === 'All' || blog.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
+    return matchesQuery && matchesTag;
   });
 
-  const categories = ['All', 'Agri-Tech', 'Computer Science', 'Web Development'];
-
-  // Detail expanded reading screen
-  if (selectedBlog) {
-    return (
-      <section id="blog-details-section" className="py-24 px-6 max-w-4xl mx-auto">
-        {/* SCROLL PROGRESS BAR */}
-        <div className="fixed top-0 left-0 right-0 h-1 bg-zinc-100/50 z-50">
-          <motion.div 
-            className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 shadow-[0_0_8px_rgba(6,182,212,0.4)]"
-            style={{ width: `${scrollProgress}%` }}
-          />
+  return (
+    <section id="blog-section" className="py-20 px-6 max-w-6xl mx-auto">
+      {/* SECTION HEADER */}
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 text-xs font-mono font-bold mb-4">
+          <BookOpen className="w-3.5 h-3.5 text-cyan-500 animate-pulse" />
+          <span>Technical Publications</span>
         </div>
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-zinc-900 font-sans">
+          Technical <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600">Articles</span>
+        </h2>
+        <div className="w-16 h-1.5 bg-cyan-500 mx-auto rounded-full mt-4" />
+        <p className="text-sm text-zinc-500 mt-3 font-mono">Insights, hardware deep-dives, and engineering notes</p>
+      </div>
 
-        {/* BACK TO OVERVIEW */}
-        <button
-          onClick={() => setSelectedBlog(null)}
-          className="flex items-center gap-2 text-xs font-mono font-bold text-zinc-500 hover:text-zinc-900 mb-8 transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={14} />
-          Back to Articles
-        </button>
-
-        {/* HERO HEADER */}
-        <div className="rounded-2xl overflow-hidden h-[340px] border border-zinc-200 relative mb-8">
-          <img
-            src={selectedBlog.imageUrl}
-            alt={selectedBlog.title}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6">
-            <span className="px-3 py-1 rounded-md text-xs font-mono font-bold text-cyan-200 bg-cyan-950/80 border border-cyan-800">
-              {selectedBlog.category}
-            </span>
-            <h1 className="text-2xl sm:text-4xl font-black text-white mt-4 tracking-tight leading-tight">
-              {selectedBlog.title}
-            </h1>
-            <div className="flex items-center gap-4 mt-3 text-xs font-mono text-zinc-300">
-              <span className="flex items-center gap-1">
-                <Calendar size={12} />
-                {selectedBlog.publishedDate}
-              </span>
-              <span className="flex items-center gap-1">
-                <FolderOpen size={12} />
-                {selectedBlog.category}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* TYPOGRAPHY ARTICLE CONTENT */}
-        <article className="prose prose-zinc max-w-none text-zinc-800 text-sm leading-relaxed mb-12 p-6 sm:p-8 rounded-2xl glass-panel">
-          {/* Simple paragraph/bullet rendering since we store raw content or simple markdown */}
-          <div className="whitespace-pre-wrap flex flex-col gap-4 font-sans">
-            {selectedBlog.content.split('\n\n').map((para, i) => {
-              if (para.startsWith('## ')) {
-                return <h2 key={i} className="text-xl font-bold text-zinc-900 tracking-tight mt-6 mb-2 border-b border-zinc-100 pb-2">{para.substring(3)}</h2>;
-              }
-              if (para.startsWith('### ')) {
-                return <h3 key={i} className="text-base font-bold text-zinc-900 tracking-tight mt-4 mb-2">{para.substring(4)}</h3>;
-              }
-              if (para.startsWith('- ') || para.startsWith('* ')) {
-                return (
-                  <ul key={i} className="list-disc pl-5 flex flex-col gap-1.5 text-zinc-700">
-                    {para.split('\n').map((li, j) => (
-                      <li key={j}>{li.substring(2)}</li>
-                    ))}
-                  </ul>
-                );
-              }
-              return <p key={i}>{para}</p>;
-            })}
-          </div>
-
-          {/* Social Stats & Like triggers */}
-          <div className="flex items-center gap-4 border-t border-zinc-100 pt-6 mt-8">
-            <button
-              onClick={(e) => handleLike(e, selectedBlog.id)}
-              className="flex items-center gap-1.5 text-xs font-mono font-bold text-pink-700 hover:text-pink-800 bg-pink-50 px-3 py-1.5 rounded-lg border border-pink-200 transition-all cursor-pointer"
-            >
-              <Heart size={14} className={selectedBlog.likes > 20 ? 'fill-pink-600 text-pink-600' : ''} />
-              <span>{selectedBlog.likes} Likes</span>
-            </button>
-            <span className="text-xs font-mono text-zinc-500">
-              Tags: {selectedBlog.tags.map(t => `#${t}`).join(', ')}
-            </span>
-          </div>
-        </article>
-
-        {/* COMMENTS THREAD SYSTEM */}
-        <section className="border-t border-zinc-100 pt-10">
-          <h3 className="text-lg font-black text-zinc-900 font-sans flex items-center gap-2 mb-6">
-            <MessageSquare size={18} className="text-cyan-600" />
-            Critiques & Comments ({comments.length})
-          </h3>
-
-          <div className="flex flex-col gap-4 mb-8">
-            {comments.map((comment) => (
-              <div 
-                key={comment.id}
-                className="p-4 rounded-xl border border-zinc-200 bg-zinc-50/50 text-xs"
+      {/* SEARCH BAR & FILTER CONTROLS */}
+      <div className="mb-10 space-y-4 p-5 rounded-2xl bg-white/80 backdrop-blur-xl border border-zinc-200/80 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Search Input */}
+          <div className="relative w-full sm:flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Filter articles by title or tech stack (e.g. ESP32, React, C)..."
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-zinc-200 text-xs font-mono bg-zinc-50/80 text-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:bg-white transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 p-1"
               >
-                <div className="flex items-center justify-between gap-2 mb-1.5 font-mono text-zinc-500">
-                  <span className="font-bold text-zinc-900">{comment.userName}</span>
-                  <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
-                </div>
-                <p className="text-zinc-700 leading-relaxed font-sans">{comment.content}</p>
-              </div>
-            ))}
-            {comments.length === 0 && (
-              <p className="text-xs font-mono text-zinc-400 text-center uppercase tracking-wider py-4">No comments posted yet. Be the first!</p>
+                <X size={14} />
+              </button>
             )}
           </div>
 
-          {/* ADD COMMENT FORM */}
-          <form onSubmit={handleCommentSubmit} className="p-5 rounded-2xl glass-panel">
-            <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600 mb-4">Post a Critique</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Your Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Recruiter / Tech Lead"
-                  value={commentName}
-                  onChange={(e) => setCommentName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
-                />
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Message</label>
-              <textarea
-                required
-                rows={4}
-                placeholder="Share your feedback, queries, or critiques about Ashfaq's projects/articles..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl text-xs bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 resize-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-            >
-              <Send size={12} />
-              Submit Comment
-            </button>
-          </form>
-        </section>
-      </section>
-    );
-  }
-
-  // Blog list overview
-  return (
-    <section id="blog-section" className="py-24 px-6 max-w-6xl mx-auto">
-      {/* SECTION HEADER */}
-      <div className="text-center mb-16">
-        <h2 id="blog-title" className="text-3xl md:text-5xl font-black tracking-tight text-zinc-900 font-sans">
-          Technical <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-emerald-600">CMS Blog</span>
-        </h2>
-        <div className="w-16 h-1.5 bg-emerald-500 mx-auto rounded-full mt-4" />
-        <p className="text-xs font-mono text-zinc-400 mt-3 uppercase tracking-widest">
-          Insights on sustainable systems, data mapping, and lower-level code
-        </p>
-      </div>
-
-      {/* FILTER PANEL */}
-      <div 
-        id="blog-controls"
-        className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl mb-10 glass-panel"
-      >
-        <div className="relative flex-1 w-full">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
-            <Search size={14} />
-          </span>
-          <input
-            type="text"
-            placeholder="Search articles, topics, and technical terms..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl text-xs font-semibold bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40"
-          />
+          <div className="text-xs font-mono text-zinc-500 whitespace-nowrap">
+            Showing <span className="font-bold text-cyan-600">{filteredPosts.length}</span> of {posts.length} articles
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
-          {categories.map((cat) => (
+        {/* Tech Stack Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar pt-2 border-t border-zinc-100">
+          <span className="text-[11px] font-mono text-zinc-400 font-bold flex items-center gap-1 mr-2">
+            <Tag size={12} className="text-cyan-500" /> Filter:
+          </span>
+          {allTags.slice(0, 10).map((tag) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat as any)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
-                selectedCategory === cat
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-transparent text-zinc-500 border-transparent hover:text-zinc-950 hover:bg-zinc-50'
+              key={tag}
+              onClick={() => setSelectedTag(tag)}
+              className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
+                selectedTag === tag
+                  ? 'bg-cyan-500 text-white shadow-sm'
+                  : 'bg-zinc-100/80 text-zinc-600 hover:bg-zinc-200/80'
               }`}
             >
-              {cat}
+              {tag}
             </button>
           ))}
         </div>
       </div>
 
-      {/* BLOG GRID */}
-      {filteredBlogs.length > 0 ? (
-        <div id="blog-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBlogs.map((blog) => (
-            <div
-              key={blog.id}
-              id={`blog-card-${blog.id}`}
-              onClick={() => setSelectedBlog(blog)}
-              className="group rounded-2xl overflow-hidden flex flex-col h-full relative cursor-pointer glass-panel glass-panel-hover"
+      {/* ARTICLES GRID */}
+      {filteredPosts.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredPosts.map((post) => (
+            <motion.div 
+              key={post.id} 
+              layout
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              className="group p-6 rounded-2xl glass-panel hover:border-cyan-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4"
             >
-              <div className="h-44 w-full overflow-hidden relative bg-zinc-100 border-b border-zinc-200">
-                <img
-                  src={blog.imageUrl}
-                  alt={blog.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200">
-                  {blog.category}
-                </span>
-                {blog.isFeatured && (
-                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold text-yellow-700 bg-yellow-50 border border-yellow-200 flex items-center gap-1">
-                    <Sparkles size={8} />
-                    Featured
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="inline-block px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-mono font-bold uppercase tracking-wider border border-cyan-200">
+                    {post.category}
                   </span>
-                )}
-              </div>
-
-              <div className="p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <span className="text-[10px] font-mono text-zinc-400 mb-1.5 block">{blog.publishedDate}</span>
-                  <h3 className="text-base font-bold text-zinc-900 group-hover:text-emerald-600 transition-colors mb-2 line-clamp-1">
-                    {blog.title}
-                  </h3>
-                  <p className="text-xs text-zinc-600 leading-relaxed line-clamp-3 mb-4">
-                    {blog.excerpt}
-                  </p>
+                  <span className="text-[10px] font-mono text-zinc-400 flex items-center gap-1">
+                    <Clock size={11} /> {post.readTime}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-zinc-100 pt-3 mt-1 text-[11px] font-bold text-zinc-500">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={(e) => handleLike(e, blog.id)}
-                      className="flex items-center gap-1 hover:text-pink-600 transition-colors"
+                <h3 className="text-lg font-bold text-zinc-900 group-hover:text-cyan-600 transition-colors leading-snug cursor-pointer">
+                  {post.title}
+                </h3>
+
+                <p className="text-xs text-zinc-600 font-mono leading-relaxed line-clamp-3">
+                  {post.excerpt}
+                </p>
+
+                {/* Tech Stack Tags */}
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {post.techStack.map((tech) => (
+                    <span 
+                      key={tech}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSearchQuery(tech);
+                      }}
+                      className="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[10px] font-mono font-semibold hover:bg-cyan-100 hover:text-cyan-800 transition-colors cursor-pointer"
                     >
-                      <Heart size={12} />
-                      <span>{blog.likes}</span>
-                    </button>
-                    <span className="flex items-center gap-1">
-                      <MessageSquare size={12} />
-                      <span>{blog.commentsCount}</span>
+                      #{tech}
                     </span>
-                  </div>
-                  <span className="text-emerald-600 group-hover:text-emerald-700">Read Post →</span>
+                  ))}
                 </div>
               </div>
 
-              {/* Admin overlays for deletion */}
-              {isAdmin && (
-                <div className="absolute top-2 left-2 flex gap-1 z-20" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => onEditBlog && onEditBlog(blog)}
-                    className="p-1.5 rounded-lg bg-blue-500 text-white text-[10px] font-bold hover:bg-blue-400"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDeleteBlog && onDeleteBlog(blog.id)}
-                    className="p-1.5 rounded-lg bg-red-600 text-white text-[10px] font-bold hover:bg-red-500"
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
+              <div className="flex items-center justify-between text-xs font-mono text-zinc-400 border-t border-zinc-100 pt-4 mt-2">
+                <span className="flex items-center gap-1.5 text-[11px]">
+                  <Calendar size={12} className="text-cyan-500" /> {post.date}
+                </span>
+                <span className="text-cyan-600 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1 cursor-pointer">
+                  Read Article →
+                </span>
+              </div>
+            </motion.div>
           ))}
         </div>
       ) : (
-        <div id="blog-empty" className="flex flex-col items-center justify-center p-12 border border-dashed border-zinc-200 rounded-2xl bg-zinc-50 text-center">
-          <AlertCircle className="text-zinc-400 mb-3" size={28} />
-          <p className="text-xs font-mono text-zinc-500">No blog posts found matching current queries</p>
+        /* EMPTY STATE */
+        <div className="text-center py-16 p-8 rounded-3xl bg-white/60 border border-zinc-200/80 space-y-3">
+          <Terminal size={32} className="mx-auto text-zinc-400" />
+          <h3 className="font-bold text-zinc-800 text-base font-sans">No matching articles found</h3>
+          <p className="text-xs text-zinc-500 font-mono max-w-md mx-auto">
+            Try searching for another technology like <span className="text-cyan-600 font-bold">ESP32</span>, <span className="text-cyan-600 font-bold">React</span>, or <span className="text-cyan-600 font-bold">Python</span>.
+          </p>
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedTag('All');
+            }}
+            className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-mono font-bold hover:bg-zinc-800 transition-colors mt-2"
+          >
+            Reset Filters
+          </button>
         </div>
       )}
     </section>

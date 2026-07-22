@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { Menu, X, ShieldAlert, Award, User, LogOut } from 'lucide-react';
+import userProfileImg from '../assets/images/ashfaq_profile_photo_1784734869215.jpg';
 
 interface NavbarProps {
   activeSection: string;
@@ -47,10 +48,18 @@ export default function Navbar({ activeSection, onNavigate, currentUser, onLogou
           onClick={() => handleNavClick('home')}
           className="flex items-center gap-2 group cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-400 to-pink-500 p-[1px] shadow-[0_0_15px_rgba(6,182,212,0.15)] group-hover:shadow-[0_0_20px_rgba(236,72,153,0.25)] transition-all duration-300">
-            <div className="w-full h-full bg-white rounded-lg flex items-center justify-center">
-              <span className="font-mono text-xs font-black text-cyan-600 group-hover:text-pink-600 transition-colors">AK</span>
-            </div>
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-400 to-pink-500 p-[1px] shadow-[0_0_15px_rgba(6,182,212,0.15)] group-hover:shadow-[0_0_20px_rgba(236,72,153,0.25)] transition-all duration-300 overflow-hidden">
+            <img
+              src={typeof userProfileImg === 'string' ? userProfileImg : (userProfileImg as any)?.src || '/assets/images/ashfaq_profile_photo_1784734869215.jpg'}
+              alt="M. Ashfaq Khan"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.src = '/assets/images/ashfaq_profile_photo_1784734869215.jpg';
+              }}
+              className="w-full h-full rounded-lg object-cover object-top bg-white"
+            />
           </div>
           <div className="flex flex-col text-left">
             <span className="text-sm font-bold tracking-tight text-zinc-900 font-sans group-hover:text-cyan-600 transition-colors">M. Ashfaq Khan</span>

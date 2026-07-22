@@ -1,6 +1,6 @@
 {
-  "name": "3D Animated Portfolio",
-  "description": "A luxury, full-stack interactive portfolio for Mohd. Ashfaq Khan with 3D canvas animations, CMS blogs, dynamic visitor analytics, and recruiter dashboards.",
+  "name": "Mohd. Ashfaq Khan - Portfolio",
+  "description": "Portfolio website of Mohd. Ashfaq Khan, Software Engineer Undergrad, displaying projects including Dasheri Shield IoT system.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

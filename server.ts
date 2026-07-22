@@ -1,546 +1,225 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
-import crypto from 'crypto';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 import { createServer as createViteServer } from 'vite';
-import { db } from './server/db/index';
 
 const app = express();
 const PORT = 3000;
+const JWT_SECRET = 'ashfaq-portfolio-secret-key-2026';
 
-// Enable JSON body parser with limit enforcements (Denial of Wallet protection)
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json());
+app.use(cookieParser());
 
-// Helper to hash password with salt
-function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password + "ashfaq-secure-salt-2026").digest('hex');
-}
+// Initial In-Memory / Persistent Data Store
+let projectsStore = [
+  {
+    id: 'dasheri-shield',
+    title: 'Agri-Tech System – The Dasheri Shield',
+    tagline: 'Web-based inventory and crop disease monitoring prototype',
+    category: 'IoT & Embedded',
+    description: 'An Agri-Tech crop-monitoring and inventory system prototype engineered to track micro-climate telemetry, simulate crop health records, and predict disease risks for mango orchards.',
+    details: `### Challenge
+Manual crop health logging and disease tracking in mango orchards leads to delayed response times against fungal infections like anthracnose and powdery mildew.
 
-// Simple cryptographically signed sessions (custom JWT-like implementation to avoid compiling issues)
-const SESSION_SECRET = "ashfaq-super-secret-session-key-2026-portfolio";
-function generateToken(payload: object): string {
-  const data = Buffer.from(JSON.stringify(payload)).toString('base64');
-  const signature = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('hex');
-  return `${data}.${signature}`;
-}
+### Solution
+Engineered a web-based crop-disease monitoring and inventory prototype using HTML5, CSS3, and JavaScript. Structured data-handling logic to simulate real-time crop health tracking and digital storage records, digitizing manual tracking workflows and improving simulated logging efficiency by ~30%.
 
-function verifyToken(token: string): any | null {
-  try {
-    const [data, signature] = token.split('.');
-    if (!data || !signature) return null;
-    const expectedSignature = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('hex');
-    if (signature !== expectedSignature) return null;
-    return JSON.parse(Buffer.from(data, 'base64').toString('utf8'));
-  } catch (e) {
-    return null;
+### Key Achievements
+- Ranked top 15 out of 44 university teams in a competitive hackathon for solution design and execution.
+- Applied modular programming principles to ensure high maintainability and system scalability.
+- Developed real-time telemetry visualizers for temperature, soil moisture, and leaf wetness duration (LWD).`,
+    tags: ['C', 'Python', 'JavaScript', 'HTML5', 'CSS3', 'IoT Telemetry', 'DSA', 'Agri-Tech'],
+    featured: true,
+    githubUrl: 'https://github.com/khanashfaq21732-dev/dasheri-shield',
+    demoUrl: '#dasheri-shield'
+  },
+  {
+    id: 'personal-portfolio',
+    title: 'Personal Portfolio Website',
+    tagline: 'AI-assisted personal portfolio and project showcase website',
+    category: 'Web Engineering',
+    description: 'Developed a modern, fully responsive personal portfolio website using AI Studio, Next.js, React.js, and Tailwind CSS to showcase projects, technical skills, achievements, certifications, and professional experience.',
+    details: `### Challenge
+Creating a unified, highly polished digital presence that effectively highlights computer science fundamentals, hackathon accomplishments, and interactive software demonstrations.
+
+### Solution
+Designed an interactive, mobile-first user interface with reusable React components, smooth navigation, Three.js cosmic canvas visuals, and responsive layouts for seamless cross-device compatibility.
+
+### Key Achievements
+- Integrated live IoT telemetry dashboards using Recharts and interactive WebGL canvas background.
+- Built an administrative telemetry & CMS dashboard supporting CRUD operations and visitor analytics.
+- Leveraged AI-assisted development workflows to maintain high code accessibility, responsiveness, and performance.`,
+    tags: ['React.js', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Vite', 'Three.js', 'Node.js'],
+    featured: true,
+    githubUrl: 'https://github.com/khanashfaq21732-dev/mohd-ashfaq-portfolio',
+    demoUrl: 'https://ai.studio/apps/c1988ea7-c380-4757-8937-5c7736f7562e?fullscreenApplet=true'
   }
-}
+];
 
-// Helper to escape HTML characters to prevent stored/reflective XSS attacks
-function escapeHtml(text: string): string {
-  if (typeof text !== 'string') return text;
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+let blogStore = [
+  {
+    id: 'dasheri-shield-deep-dive',
+    title: 'Building Dasheri Shield: IoT Sensors for Precision Agriculture',
+    date: '2026-06-15',
+    readTime: '5 min read',
+    excerpt: 'How we structured data-handling logic and modular programming to simulate real-time crop health tracking and digitize manual orchard workflows.',
+    content: `Precision agriculture is transforming traditional farming by bringing data-driven telemetry straight to orchard management. During our university hackathon, our team designed "The Dasheri Shield" to tackle fungal disease outbreaks in mango crops.
 
-// Helper to validate email addresses using standard regular expression
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+By structuring modular JavaScript and simulated telemetry inputs for temperature, relative humidity, and leaf wetness duration (LWD), we created a predictive risk index algorithm that improved simulated logging efficiency by 30% and placed in the top 15 out of 44 competing teams.`,
+    tags: ['Agri-Tech', 'IoT', 'C/C++', 'JavaScript', 'Hackathon'],
+    comments: [
+      { id: '1', author: 'Dr. A. Sharma', text: 'Excellent application of modular software logic to real-world agriculture!', date: '2026-06-16' }
+    ]
+  },
+  {
+    id: 'dsa-to-production',
+    title: 'Bridging Data Structures & Algorithms into Production Web Apps',
+    date: '2026-05-20',
+    readTime: '4 min read',
+    excerpt: 'How applying core DSA principles in C, Python, and TypeScript leads to cleaner code structure and efficient telemetry stream processing.',
+    content: `Mastering Data Structures & Algorithms is more than just passing coding assessments—it is the foundation of writing memory-efficient, performant web applications and embedded system logic.
 
-// Manual Cookie Parser utility middleware
-app.use((req, res, next) => {
-  const cookieHeader = req.headers.cookie || '';
-  const cookies: Record<string, string> = {};
-  cookieHeader.split(';').forEach(cookie => {
-    const parts = cookie.split('=');
-    if (parts.length === 2) {
-      cookies[parts[0].trim()] = parts[1].trim();
-    }
-  });
-  (req as any).cookies = cookies;
-  next();
-});
-
-// Auth Middleware
-function requireAuth(role?: string) {
-  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const authHeader = req.headers.authorization || '';
-    let token = '';
-    
-    if (authHeader.startsWith('Bearer ')) {
-      token = authHeader.substring(7);
-    } else {
-      token = (req as any).cookies?.token || '';
-    }
-
-    if (!token) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return res.status(401).json({ error: "Invalid or expired session" });
-    }
-
-    if (role && payload.role !== role) {
-      return res.status(403).json({ error: "Insufficient privileges. Requires role: " + role });
-    }
-
-    (req as any).user = payload;
-    next();
-  };
-}
-
-// REST API ROUTES
-const router = express.Router();
-
-// --- AUTHENTICATION ENDPOINTS ---
-router.post('/auth/register', (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "Name, email, and password are required" });
+In this article, I discuss how sliding window algorithms and circular buffers enhance real-time sensor logging streams in React and Node.js applications.`,
+    tags: ['DSA', 'C Programming', 'Python', 'React', 'Computer Science'],
+    comments: []
   }
+];
 
-  const existingUser = db.getUserByEmail(email);
-  if (existingUser) {
-    return res.status(400).json({ error: "User with this email already exists" });
+let messagesStore: any[] = [
+  {
+    id: 'msg-1',
+    name: 'Agri-Tech Recruiter',
+    email: 'recruiter@agritech.org',
+    message: 'Impressive work on the Dasheri Shield crop monitoring system! We would love to discuss an engineering opportunity with you.',
+    timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
+    read: false
+  },
+  {
+    id: 'msg-2',
+    name: 'Dr. A. Sharma',
+    email: 'sharma@srmu.edu.in',
+    message: 'Congratulations on placing in the top 15 out of 44 teams at the university hackathon. Keep up the great work in DSA and web engineering.',
+    timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
+    read: true
   }
+];
+let analyticsLogs: any[] = [
+  { timestamp: new Date().toISOString(), page: '/', referrer: 'Direct', userAgent: 'Mozilla/5.0' }
+];
 
-  const passwordHash = hashPassword(password);
-  const newUser = {
-    id: "user-" + Date.now(),
-    name,
-    email,
-    passwordHash,
-    role: "user",
-    createdAt: new Date().toISOString()
-  };
-
-  db.addUser(newUser);
-  const token = generateToken({ id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role });
-
-  res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 86400000 });
-  res.json({ token, user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role } });
-});
-
-router.post('/auth/login', (req, res) => {
+// AUTH MIDDLEWARE & ENDPOINTS
+app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+    return res.status(400).json({ success: false, message: 'Please provide email and password.' });
   }
 
-  const user = db.getUserByEmail(email);
-  if (!user) {
-    return res.status(401).json({ error: "Invalid email or password" });
+  // Admin & Recruiter hardcoded credentials check
+  if ((email === 'khanashfaq21732@gmail.com' || email === 'recruiter@gmail.com') && password === 'AdminPassword123!') {
+    const user = {
+      email,
+      name: email === 'khanashfaq21732@gmail.com' ? 'Mohd. Ashfaq Khan' : 'Recruiter Evaluator',
+      role: 'admin'
+    };
+    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '1d' });
+    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
+    return res.json({ success: true, token, user });
   }
 
-  const inputSaltHash = hashPassword(password);
-  const inputSha256 = crypto.createHash('sha256').update(password).digest('hex');
-  const inputMd5 = crypto.createHash('md5').update(password).digest('hex');
-
-  const isValidPassword = 
-    user.passwordHash === inputSaltHash || 
-    user.passwordHash === inputSha256 || 
-    user.passwordHash === inputMd5 ||
-    (password === 'AdminPassword123!' && (user.email === 'khanashfaq21732@gmail.com' || user.email === 'recruiter@gmail.com'));
-
-  if (!isValidPassword) {
-    return res.status(401).json({ error: "Invalid email or password" });
+  // Flexible sign-in for any guest/recruiter testing
+  if (email.includes('@') && password.length >= 3) {
+    const userName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const user = {
+      email,
+      name: userName || 'Guest Evaluator',
+      role: 'recruiter'
+    };
+    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '1d' });
+    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
+    return res.json({ success: true, token, user });
   }
 
-  const token = generateToken({ id: user.id, name: user.name, email: user.email, role: user.role });
-  res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 86400000 });
-  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  return res.status(401).json({ 
+    success: false, 
+    message: 'Invalid credentials. Enter any valid email and password (or use standard demo credentials).' 
+  });
 });
 
-router.post('/auth/logout', (req, res) => {
+app.get('/api/auth/me', (req, res) => {
+  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ authenticated: false });
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return res.json({ authenticated: true, user: decoded });
+  } catch (err) {
+    return res.status(401).json({ authenticated: false });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
   res.clearCookie('token');
-  res.json({ success: true, message: "Logged out successfully" });
+  return res.json({ success: true });
 });
 
-router.get('/auth/me', (req, res) => {
-  const authHeader = req.headers.authorization || '';
-  let token = '';
-  
-  if (authHeader.startsWith('Bearer ')) {
-    token = authHeader.substring(7);
-  } else {
-    token = (req as any).cookies?.token || '';
-  }
-
-  if (!token) {
-    return res.json({ user: null });
-  }
-
-  const payload = verifyToken(token);
-  if (!payload) {
-    return res.json({ user: null });
-  }
-
-  res.json({ user: payload });
+// ANALYTICS & LOGGING
+app.post('/api/analytics', (req, res) => {
+  const { page, referrer } = req.body;
+  const log = { timestamp: new Date().toISOString(), page, referrer: referrer || 'Direct' };
+  analyticsLogs.push(log);
+  if (analyticsLogs.length > 200) analyticsLogs.shift();
+  res.json({ status: 'ok' });
 });
 
-// --- VISITOR ANALYTICS RECORDER ---
-router.post('/analytics/log', (req, res) => {
-  const { referrer } = req.body;
-  const userAgent = req.headers['user-agent'] || '';
-  
-  // Basic user-agent parsing
-  let browser = 'Unknown';
-  if (userAgent.includes('Chrome')) browser = 'Chrome';
-  else if (userAgent.includes('Firefox')) browser = 'Firefox';
-  else if (userAgent.includes('Safari')) browser = 'Safari';
-  else if (userAgent.includes('Edge')) browser = 'Edge';
-
-  let device = 'Desktop';
-  if (userAgent.includes('Mobi') || userAgent.includes('Android') || userAgent.includes('iPhone')) {
-    device = 'Mobile';
-  } else if (userAgent.includes('Tablet') || userAgent.includes('iPad')) {
-    device = 'Tablet';
-  }
-
-  // IP/Country simulation
-  const countries = ['India', 'United States', 'United Kingdom', 'Germany', 'Canada', 'Singapore'];
-  const country = countries[Math.floor(Math.random() * countries.length)];
-
-  const newLog = {
-    id: "log-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
-    timestamp: new Date().toISOString(),
-    country,
-    browser,
-    device,
-    referrer: referrer || 'Direct / None'
-  };
-
-  db.addVisitorLog(newLog);
-  res.json({ success: true });
-});
-
-router.get('/analytics/summary', requireAuth('admin'), (req, res) => {
-  res.json(db.getAnalyticsSummary());
-});
-
-// --- PROJECTS ENDPOINTS ---
-router.get('/projects', (req, res) => {
-  res.json(db.getProjects());
-});
-
-router.post('/projects', requireAuth('admin'), (req, res) => {
-  const project = req.body;
-  if (!project.id || !project.title || !project.description) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-  db.saveProject(project);
-  res.json({ success: true, project });
-});
-
-router.delete('/projects/:id', requireAuth('admin'), (req, res) => {
-  db.deleteProject(req.params.id);
-  res.json({ success: true });
-});
-
-// --- BLOGS & COMMENTS ENDPOINTS ---
-router.get('/blogs', (req, res) => {
-  res.json(db.getBlogs());
-});
-
-router.post('/blogs', requireAuth('admin'), (req, res) => {
-  const blog = req.body;
-  if (!blog.id || !blog.title || !blog.excerpt || !blog.content) {
-    return res.status(400).json({ error: "Missing required blog fields" });
-  }
-  db.saveBlog(blog);
-  res.json({ success: true, blog });
-});
-
-router.delete('/blogs/:id', requireAuth('admin'), (req, res) => {
-  db.deleteBlog(req.params.id);
-  res.json({ success: true });
-});
-
-router.get('/blogs/:id/comments', (req, res) => {
-  const comments = db.getComments().filter(c => c.blogId === req.params.id);
-  res.json(comments);
-});
-
-router.post('/blogs/:id/comments', (req, res) => {
-  const { userName, content } = req.body;
-  if (!userName || !content) {
-    return res.status(400).json({ error: "Username and comment content are required" });
-  }
-
-  const sanitizedUserName = escapeHtml(userName.trim().substring(0, 100));
-  const sanitizedContent = escapeHtml(content.trim().substring(0, 2000));
-
-  const newComment = {
-    id: "comment-" + Date.now(),
-    blogId: req.params.id,
-    userName: sanitizedUserName,
-    content: sanitizedContent,
-    createdAt: new Date().toISOString()
-  };
-
-  db.addComment(newComment);
-  res.json({ success: true, comment: newComment });
-});
-
-router.post('/blogs/:id/like', (req, res) => {
-  const blog = db.getBlogs().find(b => b.id === req.params.id);
-  if (!blog) {
-    return res.status(404).json({ error: "Blog post not found" });
-  }
-  blog.likes = (blog.likes || 0) + 1;
-  db.saveBlog(blog);
-  res.json({ success: true, likes: blog.likes });
-});
-
-// --- SKILLS ENDPOINTS ---
-router.get('/skills', (req, res) => {
-  res.json(db.getSkills());
-});
-
-router.post('/skills', requireAuth('admin'), (req, res) => {
-  const skill = req.body;
-  if (!skill.id || !skill.name || skill.level === undefined) {
-    return res.status(400).json({ error: "ID, name, and level are required" });
-  }
-  db.saveSkill(skill);
-  res.json({ success: true, skill });
-});
-
-router.delete('/skills/:id', requireAuth('admin'), (req, res) => {
-  db.deleteSkill(req.params.id);
-  res.json({ success: true });
-});
-
-// --- EXPERIENCE TIMELINE ENDPOINTS ---
-router.get('/experiences', (req, res) => {
-  res.json(db.getExperiences());
-});
-
-router.post('/experiences', requireAuth('admin'), (req, res) => {
-  const exp = req.body;
-  if (!exp.id || !exp.role || !exp.company || !exp.period) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-  db.saveExperience(exp);
-  res.json({ success: true, experience: exp });
-});
-
-router.delete('/experiences/:id', requireAuth('admin'), (req, res) => {
-  db.deleteExperience(req.params.id);
-  res.json({ success: true });
-});
-
-// --- TESTIMONIALS ENDPOINTS ---
-router.get('/testimonials', (req, res) => {
-  res.json(db.getTestimonials());
-});
-
-router.post('/testimonials', requireAuth('admin'), (req, res) => {
-  const testimonial = req.body;
-  if (!testimonial.id || !testimonial.name || !testimonial.content) {
-    return res.status(400).json({ error: "Missing testimonial fields" });
-  }
-  db.saveTestimonial(testimonial);
-  res.json({ success: true, testimonial });
-});
-
-router.delete('/testimonials/:id', requireAuth('admin'), (req, res) => {
-  db.deleteTestimonial(req.params.id);
-  res.json({ success: true });
-});
-
-// --- GALLERY ENDPOINTS ---
-router.get('/gallery', (req, res) => {
-  res.json(db.getGallery());
-});
-
-router.post('/gallery', requireAuth('admin'), (req, res) => {
-  const item = req.body;
-  if (!item.id || !item.title || !item.url) {
-    return res.status(400).json({ error: "Missing required gallery fields" });
-  }
-  db.saveGalleryItem(item);
-  res.json({ success: true, galleryItem: item });
-});
-
-router.delete('/gallery/:id', requireAuth('admin'), (req, res) => {
-  db.deleteGalleryItem(req.params.id);
-  res.json({ success: true });
-});
-
-// --- SETTINGS ENDPOINTS ---
-router.get('/settings', (req, res) => {
-  res.json(db.getSettings());
-});
-
-router.post('/settings', requireAuth('admin'), (req, res) => {
-  db.updateSettings(req.body);
-  res.json({ success: true, settings: db.getSettings() });
-});
-
-// --- RESUME ENDPOINTS ---
-router.get('/resume/download', (req, res) => {
-  // Let's create an elegant auto-generated PDF/text resume fallback
-  const settings = db.getSettings();
-  const experiences = db.getExperiences();
-  const skills = db.getSkills();
-
-  let resumeText = `==================================================\n`;
-  resumeText += `            RESUME - ${settings.name.toUpperCase()}\n`;
-  resumeText += `            ${settings.title}\n`;
-  resumeText += `==================================================\n\n`;
-  resumeText += `Email: ${settings.email}\n`;
-  resumeText += `Phone: ${settings.phone}\n`;
-  resumeText += `GitHub: ${settings.github}\n`;
-  resumeText += `LinkedIn: ${settings.linkedin}\n\n`;
-  resumeText += `BIOGRAPHY\n`;
-  resumeText += `---------\n`;
-  resumeText += `${settings.bio}\n\n`;
-  resumeText += `EDUCATION & EXPERIENCE TIMELINE\n`;
-  resumeText += `--------------------------------\n`;
-  
-  experiences.forEach(e => {
-    resumeText += `* ${e.role} | ${e.company} (${e.period})\n`;
-    e.description.forEach(desc => {
-      resumeText += `  - ${desc}\n`;
-    });
-    resumeText += `\n`;
-  });
-
-  resumeText += `CORE COMPETENCIES & TECHNICAL SKILLS\n`;
-  resumeText += `-------------------------------------\n`;
-  const categories = ['Languages', 'Core CS', 'Web & Frameworks', 'Tools & Platforms'];
-  categories.forEach(cat => {
-    const catSkills = skills.filter(s => s.category === cat);
-    if (catSkills.length > 0) {
-      resumeText += `${cat}: ${catSkills.map(s => `${s.name} (${s.level}%)`).join(', ')}\n`;
-    }
-  });
-
-  res.setHeader('Content-Type', 'text/plain');
-  res.setHeader('Content-Disposition', `attachment; filename=Resume_Mohd_Ashfaq_Khan.txt`);
-  res.send(resumeText);
-});
-
-// --- CONTACT ENDPOINT WITH EMAIL AUTO-REPLY SIMULATION ---
-router.post('/contact', (req, res) => {
-  const { name, email, phone, company, subject, message } = req.body;
-  if (!name || !email || !subject || !message) {
-    return res.status(400).json({ error: "Name, email, subject, and message are required" });
-  }
-
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ error: "Invalid email address format" });
-  }
-
-  const sanitizedName = escapeHtml(name.trim().substring(0, 100));
-  const sanitizedEmail = email.trim().toLowerCase().substring(0, 150);
-  const sanitizedPhone = escapeHtml((phone || '').trim().substring(0, 30));
-  const sanitizedCompany = escapeHtml((company || '').trim().substring(0, 100));
-  const sanitizedSubject = escapeHtml(subject.trim().substring(0, 200));
-  const sanitizedMessage = escapeHtml(message.trim().substring(0, 5000));
-
-  const newMessage = {
-    id: "msg-" + Date.now(),
-    name: sanitizedName,
-    email: sanitizedEmail,
-    phone: sanitizedPhone,
-    company: sanitizedCompany,
-    subject: sanitizedSubject,
-    message: sanitizedMessage,
-    createdAt: new Date().toISOString(),
-    isRead: false
-  };
-
-  db.addMessage(newMessage);
-
-  // SIMULATE BACKEND SMTP NOTIFICATIONS
-  console.log(`[SMTP SIMULATOR] Sent internal notification email to khanashfaq21732@gmail.com!`);
-  console.log(`[SMTP SIMULATOR] Content: New contact message from ${sanitizedName} (${sanitizedEmail}) - Subject: ${sanitizedSubject}`);
-  
-  console.log(`[SMTP SIMULATOR] Sent auto-reply email to ${sanitizedEmail}!`);
-  console.log(`[SMTP SIMULATOR] Content: "Hello ${sanitizedName}, thank you for reaching out to Mohd. Ashfaq Khan. He will get back to you shortly!"`);
-
-  res.json({ 
-    success: true, 
-    message: "Message logged successfully! Simulated auto-reply and admin notification emails dispatched.",
-    data: newMessage
-  });
-});
-
-router.get('/contact/messages', requireAuth('admin'), (req, res) => {
-  res.json(db.getMessages());
-});
-
-router.post('/contact/messages/:id/read', requireAuth('admin'), (req, res) => {
-  db.markMessageAsRead(req.params.id);
-  res.json({ success: true });
-});
-
-router.delete('/contact/messages/:id', requireAuth('admin'), (req, res) => {
-  db.deleteMessage(req.params.id);
-  res.json({ success: true });
-});
-
-// --- SUBSCRIBERS ENDPOINTS ---
-router.post('/subscribers', (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ error: "Email address is required" });
-  }
-
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ error: "Invalid email address format" });
-  }
-
-  const sanitizedEmail = email.trim().toLowerCase().substring(0, 150);
-
-  const existing = db.getSubscriberByEmail(sanitizedEmail);
-  if (existing) {
-    return res.status(409).json({ error: "This email is already subscribed!" });
-  }
-
-  const newSubscriber = {
-    id: "sub-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
-    email: sanitizedEmail,
-    subscribedAt: new Date().toISOString()
-  };
-
-  db.addSubscriber(newSubscriber);
-
-  console.log(`[SMTP SIMULATOR] Dispatching welcome confirmation email to ${sanitizedEmail}!`);
-
+app.get('/api/analytics/stats', (req, res) => {
   res.json({
-    success: true,
-    message: "Subscription successful! You have been registered for newsletter and portfolio updates.",
-    data: newSubscriber
+    totalViews: analyticsLogs.length + 142,
+    uniqueVisitors: Math.round((analyticsLogs.length + 142) * 0.72),
+    recentLogs: analyticsLogs.slice(-10)
   });
 });
 
-router.get('/subscribers', requireAuth('admin'), (req, res) => {
-  res.json(db.getSubscribers());
+// PROJECTS CRUD
+app.get('/api/projects', (req, res) => {
+  res.json(projectsStore);
 });
 
-// Bind routing under /api prefix
-app.use('/api', router);
+app.post('/api/projects', (req, res) => {
+  const newProject = { id: `proj-${Date.now()}`, ...req.body };
+  projectsStore.unshift(newProject);
+  res.json(newProject);
+});
 
-// Export app for Vercel serverless function support
-export default app;
+// BLOGS & COMMENTS
+app.get('/api/blogs', (req, res) => {
+  res.json(blogStore);
+});
 
-// Setup static serving & Vite middleware integration
+app.post('/api/blogs/:id/comments', (req, res) => {
+  const { id } = req.params;
+  const { author, text } = req.body;
+  const post = blogStore.find(p => p.id === id);
+  if (post) {
+    const comment = { id: `cmt-${Date.now()}`, author: author || 'Anonymous Developer', text, date: new Date().toISOString().split('T')[0] };
+    post.comments.push(comment);
+    return res.json(comment);
+  }
+  res.status(404).json({ error: 'Post not found' });
+});
+
+// CONTACT MESSAGES
+app.get('/api/contact', (req, res) => {
+  res.json(messagesStore);
+});
+
+app.post('/api/contact', (req, res) => {
+  const { name, email, message } = req.body;
+  const msg = { id: `msg-${Date.now()}`, name, email, message, timestamp: new Date().toISOString(), read: false };
+  messagesStore.unshift(msg);
+  res.json({ success: true, message: 'Message received by Mohd. Ashfaq Khan. Auto-acknowledgment logged.' });
+});
+
+// VITE OR STATIC SERVING
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
@@ -551,17 +230,14 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*all', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Full-Stack Portfolio running on http://localhost:${PORT}`);
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
   });
 }
 
-// Only start standalone server if not deployed as Vercel serverless function
-if (!process.env.VERCEL) {
-  startServer();
-}
+startServer();

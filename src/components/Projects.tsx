@@ -1,7 +1,4 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Search, ExternalLink, Github, Filter, Code2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, X, AlertCircle, Thermometer, Droplets, Activity, ShieldAlert, Sparkles, Database, UploadCloud, Check, Zap, Eye, BookOpen, Trophy, Cpu, Radio, BarChart3, TrendingUp, RefreshCw } from 'lucide-react';
@@ -20,32 +17,48 @@ import {
   Legend 
 } from 'recharts';
 import { Project } from '../types';
-import dasheriIotGridImg from '../assets/images/dasheri_iot_grid_1784626704159.jpg';
-import mangoFarmingDashImg from '../assets/images/mango_farming_dashboard_1784627790898.jpg';
+import ashfaqProfileImg from '../assets/images/ashfaq_profile_photo_1784734869215.jpg';
+import dasheriShieldImg from '../assets/images/dasheri_shield_project_1784737011410.jpg';
+import portfolioWebsiteImg from '../assets/images/portfolio_website_project_1784737030883.jpg';
 
-function DasheriShieldDashboard() {
-  const [activeLeaf, setActiveLeaf] = useState<'healthy' | 'anthracnose' | 'mildew'>('healthy');
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState<{
-    status: string;
-    prob: number;
-    action: string;
-    color: string;
-    severity: string;
-  } | null>({
-    status: 'Healthy Canopy',
-    prob: 99.1,
-    action: 'Plantation tissue is structurally sound. Maintain current watering schedules and check again in 72 hours.',
-    color: 'text-emerald-400 border-emerald-500/20 bg-emerald-950/20',
-    severity: '0% disease load'
-  });
-  
+const initialProjects: Project[] = [
+  {
+    id: 'dasheri-shield',
+    title: 'Dasheri Shield (AamRakshak)',
+    tagline: 'Mobile-First Agri-Tech App for Crop Disease Identification & Direct Marketplace',
+    category: 'IoT & Embedded',
+    description: 'A mobile-first frontend web application developed to assist small-scale farmers with crop disease identification and direct-to-market sales. Built with a focus on web accessibility, responsive design, and low-bandwidth performance.',
+    details: 'Project Context:\nThis project was developed as an AgriTech hackathon prototype targeting the Malihabad mango-farming belt. The core engineering challenge was designing a highly accessible, lightweight interface for a demographic with spotty internet connectivity and entry-level mobile hardware.\n\nCore Features:\n• Simulated Edge AI Interface: Frontend module simulating image processing for crop disease detection with localized UI feedback.\n• Dynamic Inventory Dashboard: Client-side rendering of inventory status cards featuring color-coded risk alerts based on harvest shelf-life.\n• Direct Marketplace Directory: Integrated tel: URI schemes enabling direct farmer-to-buyer communication, bypassing traditional intermediaries.\n• Bilingual UI: Designed for users with limited digital literacy, featuring a dual-language (English/Hindi) interface and reliance on accessible visual cues.\n• Low-Bandwidth Optimization: Engineered without heavy frontend frameworks to ensure rapid Time to Interactive (TTI) on 2G/3G networks.',
+    tags: ['HTML5', 'CSS3', 'JavaScript', 'SPA Architecture', 'Mobile-First', 'Edge AI Simulation', 'AgriTech'],
+    featured: true,
+    image: dasheriShieldImg,
+    githubUrl: 'https://github.com/khanashfaq21732-dev/dasheri-shield',
+    demoUrl: '#dasheri-shield'
+  },
+  {
+    id: 'portfolio-website',
+    title: 'Interactive Portfolio & Engineering Showcase',
+    tagline: 'Modern React & TypeScript Developer Portfolio',
+    category: 'Web Engineering',
+    description: 'A responsive full-stack developer portfolio showcasing computer science projects, hackathon achievements, and interactive live dashboards.',
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'Node.js'],
+    featured: true,
+    image: portfolioWebsiteImg,
+    githubUrl: 'https://github.com/khanashfaq21732-dev/mohd-ashfaq-portfolio'
+  }
+];
+
+export default function Projects() {
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // Dasheri Shield telemetry states
   const [temp, setTemp] = useState(31.5);
   const [moisture, setMoisture] = useState(42);
   const [humidity, setHumidity] = useState(78);
   const [lwd, setLwd] = useState(4.2);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [viewMode, setViewMode] = useState<'blueprint' | 'livecam'>('blueprint');
+  const [isStreaming, setIsStreaming] = useState(true);
   const [chartTab, setChartTab] = useState<'telemetry' | 'trends' | 'plots'>('telemetry');
 
   const [telemetryHistory, setTelemetryHistory] = useState([
@@ -63,16 +76,6 @@ function DasheriShieldDashboard() {
     { name: 'Plot F-9 (Kesar)', temp: 32.0, moisture: 40, threat: 28, nodes: 2 },
   ];
 
-  const [observer, setObserver] = useState('');
-  const [plot, setPlot] = useState('Plot D-4');
-  const [status, setStatus] = useState('Healthy');
-  const [remarks, setRemarks] = useState('');
-  const [logs, setLogs] = useState<any[]>([
-    { id: 1, observer: 'Ashfaq Khan', plot: 'Plot A-1', status: 'Healthy', time: '10 mins ago' },
-    { id: 2, observer: 'Arif Patel', plot: 'Plot C-3', status: 'Suspected Anthracnose', time: '1 hr ago' }
-  ]);
-
-  // Handle telemetry streaming interval
   useEffect(() => {
     let interval: any;
     if (isStreaming) {
@@ -107,1141 +110,543 @@ function DasheriShieldDashboard() {
     return () => clearInterval(interval);
   }, [isStreaming, temp, moisture, humidity, lwd]);
 
-  const handleScan = () => {
-    setIsScanning(true);
-    setScanResult(null);
-    setTimeout(() => {
-      setIsScanning(false);
-      if (activeLeaf === 'healthy') {
-        setScanResult({
-          status: 'Healthy Canopy',
-          prob: 99.1,
-          action: 'Plantation tissue is structurally sound. Maintain current watering schedules and check again in 72 hours.',
-          color: 'text-emerald-400 border-emerald-500/20 bg-emerald-950/20',
-          severity: '0% disease load'
-        });
-      } else if (activeLeaf === 'anthracnose') {
-        setScanResult({
-          status: 'Anthracnose Spots Detected',
-          prob: 94.6,
-          action: 'URGENT: Isolate affected branch instantly. Apply organic copper-based fungicide spray. Reduce leaf wetness duration below 3 hours.',
-          color: 'text-rose-400 border-rose-500/20 bg-rose-950/20',
-          severity: '45% tissue infection (Moderate)'
-        });
-      } else {
-        setScanResult({
-          status: 'Powdery Mildew Coating',
-          prob: 88.3,
-          action: 'WARNING: Fungal spore network spreading on upper leaves. Spray biological neem oil remedy immediately. Ensure proper solar exposure through canopy pruning.',
-          color: 'text-amber-400 border-amber-500/20 bg-amber-950/20',
-          severity: '20% tissue coating (Early Stage)'
-        });
-      }
-    }, 2000);
-  };
+  const categories = ['All', 'IoT & Embedded', 'Web Engineering'];
 
-  const handleSubmitLog = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!observer.trim()) return;
-    const newLog = {
-      id: Date.now(),
-      observer: observer.trim(),
-      plot,
-      status,
-      time: 'Just now'
-    };
-    setLogs(prev => [newLog, ...prev]);
-    setObserver('');
-    setRemarks('');
-  };
-
-  const leafImages = {
-    healthy: 'https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=600&q=80',
-    anthracnose: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80',
-    mildew: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80'
-  };
-
-  return (
-    <div className="space-y-6 text-zinc-800 font-sans mt-4">
-      {/* HEADER BADGE & SUMMARY */}
-      <div className="border border-cyan-200 bg-cyan-50/40 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-md bg-cyan-100 text-cyan-600">
-              <ShieldAlert size={14} />
-            </span>
-            <span className="text-xs font-mono font-bold tracking-wider uppercase text-cyan-700">
-              Interactive Crop Diagnostics Sandbox
-            </span>
-          </div>
-          <p className="text-[11px] text-zinc-500 max-w-xl">
-            This module simulates 'The Dasheri Shield' microclimate sensor grid and computer-vision diagnostic tool in real time. Interact with the sensor stream, sample leaves, or log new plots.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIsStreaming(!isStreaming)}
-            className={`px-3.5 py-1.5 rounded-xl text-[10px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-              isStreaming
-                ? 'bg-rose-100 text-rose-700 border border-rose-200 animate-pulse'
-                : 'bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100/70'
-            }`}
-          >
-            <Activity size={12} className={isStreaming ? 'animate-spin' : ''} />
-            {isStreaming ? 'STOP STREAM' : 'SIMULATE STREAM'}
-          </button>
-        </div>
-      </div>
-
-      {/* TELEMETRY METRIC GAUGES */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Metric 1 */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500 opacity-60" />
-          <div className="flex items-center justify-between text-zinc-400 mb-1">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Ambient Temp</span>
-            <Thermometer size={14} className="text-cyan-600" />
-          </div>
-          <p className="text-lg font-mono font-black text-zinc-800">{temp} °C</p>
-          <span className="text-[9px] text-zinc-400 font-mono">Sensors: Active</span>
-        </div>
-
-        {/* Metric 2 */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-60" />
-          <div className="flex items-center justify-between text-zinc-400 mb-1">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Soil Moisture</span>
-            <Droplets size={14} className="text-blue-500" />
-          </div>
-          <p className="text-lg font-mono font-black text-zinc-800">{moisture}%</p>
-          <span className="text-[9px] text-zinc-400 font-mono">Plot: D-Zone</span>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 opacity-60" />
-          <div className="flex items-center justify-between text-zinc-400 mb-1">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Air Humidity</span>
-            <Activity size={14} className="text-purple-500" />
-          </div>
-          <p className="text-lg font-mono font-black text-zinc-800">{humidity}%</p>
-          <span className="text-[9px] text-zinc-400 font-mono">Level: Stable</span>
-        </div>
-
-        {/* Metric 4 */}
-        <div className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-pink-500 opacity-60" />
-          <div className="flex items-center justify-between text-zinc-400 mb-1">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Leaf Wetness</span>
-            <Zap size={14} className="text-pink-500" />
-          </div>
-          <p className="text-lg font-mono font-black text-zinc-800">{lwd} hrs</p>
-          <span className="text-[9px] text-zinc-400 font-mono">LWD Threshold: 8.0</span>
-        </div>
-      </div>
-
-      {/* REAL-TIME RECHARTS TELEMETRY VISUALIZER */}
-      <div className="p-4 rounded-xl border border-zinc-200 bg-white/80 shadow-sm space-y-3">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-600">
-              <TrendingUp size={16} />
-            </div>
-            <div>
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
-                <span>Real-Time Sensor Telemetry Stream</span>
-                {isStreaming && (
-                  <span className="flex items-center gap-1 text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                    LIVE
-                  </span>
-                )}
-              </h4>
-              <p className="text-[10px] text-zinc-500 font-mono">
-                Responsive IoT node telemetry feeds plotted over time via Recharts
-              </p>
-            </div>
-          </div>
-
-          {/* Tab Switcher & Animated Signal Indicator */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200/80">
-              <button
-                type="button"
-                onClick={() => setChartTab('telemetry')}
-                className={`px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase transition-all cursor-pointer ${
-                  chartTab === 'telemetry'
-                    ? 'bg-white text-cyan-700 shadow-xs border border-zinc-200'
-                    : 'text-zinc-500 hover:text-zinc-900'
-                }`}
-              >
-                Telemetry Stream
-              </button>
-              <button
-                type="button"
-                onClick={() => setChartTab('trends')}
-                className={`px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase transition-all cursor-pointer ${
-                  chartTab === 'trends'
-                    ? 'bg-white text-rose-700 shadow-xs border border-zinc-200'
-                    : 'text-zinc-500 hover:text-zinc-900'
-                }`}
-              >
-                Disease Risk Index
-              </button>
-              <button
-                type="button"
-                onClick={() => setChartTab('plots')}
-                className={`px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase transition-all cursor-pointer ${
-                  chartTab === 'plots'
-                    ? 'bg-white text-blue-700 shadow-xs border border-zinc-200'
-                    : 'text-zinc-500 hover:text-zinc-900'
-                }`}
-              >
-                Sector Comparison
-              </button>
-            </div>
-
-            {/* Animated SVG Signal Node Icon */}
-            <div className="hidden md:flex items-center gap-1.5 text-zinc-400 font-mono text-[9px]" title="LoRaWAN Signal Active">
-              <div className="relative flex items-center justify-center w-5 h-5">
-                <svg className="w-5 h-5 text-cyan-500 animate-spin" style={{ animationDuration: '6s' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2a10 10 0 0 1 10 10" strokeDasharray="3 3" />
-                  <path d="M12 6a6 6 0 0 1 6 6" strokeDasharray="2 2" />
-                </svg>
-                <Radio size={10} className="absolute text-cyan-600" />
-              </div>
-              <span className="text-cyan-700 font-bold">915MHz LoRa</span>
-            </div>
-          </div>
-        </div>
-
-        {/* CHART CONTENT AREA */}
-        <div className="w-full h-56 pt-2">
-          <ResponsiveContainer width="100%" height="100%">
-            {chartTab === 'telemetry' ? (
-              <AreaChart data={telemetryHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="tempGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.35}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0}/>
-                  </linearGradient>
-                  <linearGradient id="moistureGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
-                  </linearGradient>
-                  <linearGradient id="humidityGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.35}/>
-                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
-                <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 100]} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
-                <Area type="monotone" dataKey="temp" name="Temp (°C)" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#tempGradient)" />
-                <Area type="monotone" dataKey="moisture" name="Soil Moisture (%)" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#moistureGradient)" />
-                <Area type="monotone" dataKey="humidity" name="Air Humidity (%)" stroke="#a855f7" strokeWidth={2} fillOpacity={1} fill="url(#humidityGradient)" />
-              </AreaChart>
-            ) : chartTab === 'trends' ? (
-              <LineChart data={telemetryHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
-                <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 100]} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
-                <Line type="monotone" dataKey="threat" name="Disease Risk Index (%)" stroke="#f43f5e" strokeWidth={2.5} dot={{ r: 3, fill: '#f43f5e' }} activeDot={{ r: 5 }} />
-                <Line type="monotone" dataKey="lwd" name="Leaf Wetness (hrs)" stroke="#ec4899" strokeWidth={2} strokeDasharray="4 4" />
-              </LineChart>
-            ) : (
-              <BarChart data={plotComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
-                <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 60]} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
-                <Bar dataKey="temp" name="Ambient Temp (°C)" fill="#06b6d4" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="moisture" name="Soil Moisture (%)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="threat" name="Threat Load (%)" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            )}
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* ORCHARD IoT FIELD TOPOLOGY */}
-      <div className="p-4 rounded-xl border border-zinc-200 bg-white/70 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5 items-center animate-fade-in">
-        <div className="md:col-span-2 overflow-hidden rounded-lg border border-zinc-200 aspect-[16/9] relative bg-zinc-50 group">
-          <img
-            src={viewMode === 'blueprint' ? dasheriIotGridImg : mangoFarmingDashImg}
-            alt={viewMode === 'blueprint' ? "Dasheri Shield IoT Orchard Topology" : "Mango Farming Orchard Feed"}
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.src = viewMode === 'blueprint' 
-                ? 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80'
-                : 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=80';
-            }}
-            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-          />
-          <div className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded text-[8px] font-mono font-bold flex items-center gap-1 shadow-sm ${
-            viewMode === 'blueprint' ? 'text-cyan-700 bg-white/95 border border-cyan-200' : 'text-amber-800 bg-amber-50/95 border border-amber-200'
-          }`}>
-            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${viewMode === 'blueprint' ? 'bg-cyan-500' : 'bg-amber-500'}`} />
-            {viewMode === 'blueprint' ? 'LIVE SENSOR GRID GEOMAP' : 'LIVE ORCHARD CAM feed'}
-          </div>
-        </div>
-        <div className="space-y-3.5">
-          {/* Toggle Switches */}
-          <div className="flex items-center gap-1.5 bg-zinc-100/80 p-1 rounded-xl border border-zinc-200/50">
-            <button
-              type="button"
-              onClick={() => setViewMode('blueprint')}
-              className={`flex-1 py-1 rounded-lg text-[9px] font-mono font-black uppercase transition-all cursor-pointer ${
-                viewMode === 'blueprint'
-                  ? 'bg-white text-cyan-700 shadow-xs border border-zinc-200'
-                  : 'text-zinc-500 hover:text-zinc-800'
-              }`}
-            >
-              Blueprint Map
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('livecam')}
-              className={`flex-1 py-1 rounded-lg text-[9px] font-mono font-black uppercase transition-all cursor-pointer ${
-                viewMode === 'livecam'
-                  ? 'bg-white text-amber-700 shadow-xs border border-zinc-200'
-                  : 'text-zinc-500 hover:text-zinc-800'
-              }`}
-            >
-              Orchard Cam
-            </button>
-          </div>
-
-          {viewMode === 'blueprint' ? (
-            <div>
-              <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-100 uppercase tracking-wider mb-1.5 inline-block">
-                Deployment Blueprint
-              </span>
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-1 flex items-center gap-1.5">
-                <Database size={13} />
-                Sensor Grid Topology
-              </h4>
-              <p className="text-[11px] text-zinc-500 leading-relaxed">
-                Wireless solar-powered IoT microclimate nodes are deployed across 12 sectors of the Dasheri orchard. They continuously stream temperature, moisture, and leaf wetness metrics directly to the centralized gateway to predict and mitigate disease loads before visible symptoms spread.
-              </p>
-            </div>
-          ) : (
-            <div>
-              <span className="px-2 py-0.5 rounded text-[8px] font-mono font-bold text-amber-700 bg-amber-50 border border-amber-100 uppercase tracking-wider mb-1.5 inline-block">
-                Active Crop Feed
-              </span>
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-700 mb-1 flex items-center gap-1.5">
-                <Sparkles size={13} />
-                Dasheri Canopy Camera
-              </h4>
-              <p className="text-[11px] text-zinc-500 leading-relaxed">
-                Real-time optical monitoring of the foliage and ripening clusters. Our models analyze the structural canopy health, pigmentation levels, and crop yield forecasts in conjunction with live environmental logs.
-              </p>
-            </div>
-          )}
-
-          <div className="space-y-1.5 font-mono text-[9px] text-zinc-600">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={11} className="text-emerald-500 flex-shrink-0" />
-              <span>12/12 Wireless Nodes Online</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={11} className="text-emerald-500 flex-shrink-0" />
-              <span>Edge compute latency &lt; 85ms</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={11} className="text-emerald-500 flex-shrink-0" />
-              <span>LoRaWAN gateway carrier: Active</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* TWO COLUMNS: LEAF DIAGNOSTIC SCANNER & WORKFLOW FORM LOGS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* LEAF SCANNER INTERFACE */}
-        <div className="p-4 rounded-xl border border-zinc-200 bg-white/70 shadow-sm flex flex-col justify-between">
-          <div>
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-3 flex items-center gap-1.5">
-              <Eye size={13} />
-              Leaf Diagnostic Tissue Scanner
-            </h4>
-            
-            {/* Target Select buttons */}
-            <div className="flex items-center gap-1.5 mb-3.5 font-sans">
-              <button
-                type="button"
-                onClick={() => { setActiveLeaf('healthy'); setScanResult(null); }}
-                className={`px-2.5 py-1 rounded text-[9px] font-mono font-bold transition-all border ${
-                  activeLeaf === 'healthy' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-transparent text-zinc-500 border-zinc-200 hover:text-zinc-900 hover:bg-zinc-50'
-                }`}
-              >
-                Healthy Tissue
-              </button>
-              <button
-                type="button"
-                onClick={() => { setActiveLeaf('anthracnose'); setScanResult(null); }}
-                className={`px-2.5 py-1 rounded text-[9px] font-mono font-bold transition-all border ${
-                  activeLeaf === 'anthracnose' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-transparent text-zinc-500 border-zinc-200 hover:text-zinc-900 hover:bg-zinc-50'
-                }`}
-              >
-                Anthracnose Leaf
-              </button>
-              <button
-                type="button"
-                onClick={() => { setActiveLeaf('mildew'); setScanResult(null); }}
-                className={`px-2.5 py-1 rounded text-[9px] font-mono font-bold transition-all border ${
-                  activeLeaf === 'mildew' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-transparent text-zinc-500 border-zinc-200 hover:text-zinc-900 hover:bg-zinc-50'
-                }`}
-              >
-                Powdery Mildew
-              </button>
-            </div>
-
-            {/* Simulated camera viewer */}
-            <div className="h-44 w-full rounded-xl overflow-hidden relative border border-zinc-200 bg-zinc-100 group">
-              <img
-                src={leafImages[activeLeaf]}
-                alt="Active plant tissue"
-                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              
-              {/* Scan grid animation overlay */}
-              {isScanning && (
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                  <div className="w-full h-0.5 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)] animate-bounce mt-4" />
-                  <div className="absolute inset-0 bg-cyan-500/10 animate-pulse" />
-                  <span className="absolute inset-0 m-auto w-fit h-fit font-mono text-[10px] uppercase font-black tracking-widest text-cyan-600 bg-white/95 px-3 py-1.5 rounded-md border border-cyan-300 shadow-md">
-                    SCANNING TISSUE PATTERNS...
-                  </span>
-                </div>
-              )}
-
-              {/* Status bar */}
-              <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${isScanning ? 'bg-cyan-500 animate-ping' : 'bg-emerald-500'}`} />
-                <span className="text-[9px] font-mono text-zinc-100">Aperture f/1.8 • Active</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4">
-            {scanResult ? (
-              <div className={`p-3 rounded-lg border text-[11px] font-mono leading-relaxed space-y-1.5 ${
-                activeLeaf === 'healthy' ? 'text-emerald-800 border-emerald-200 bg-emerald-50/50' : 
-                activeLeaf === 'anthracnose' ? 'text-rose-800 border-rose-200 bg-rose-50/50' : 
-                'text-amber-800 border-amber-200 bg-amber-50/50'
-              }`}>
-                <div className="flex items-center justify-between font-bold">
-                  <span>Diagnosed: {scanResult.status}</span>
-                  <span className="text-zinc-800 bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded text-[10px]">{scanResult.prob}% Match</span>
-                </div>
-                <div className="text-zinc-600 text-[10px] leading-snug">
-                  {scanResult.action}
-                </div>
-                <div className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider">
-                  Impact index: {scanResult.severity}
-                </div>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={handleScan}
-                disabled={isScanning}
-                className="w-full py-2.5 rounded-xl text-xs font-mono font-bold bg-cyan-50 border border-cyan-200 text-cyan-700 hover:bg-cyan-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-45"
-              >
-                <Sparkles size={13} />
-                {isScanning ? 'ANALYZING SPECTRUMS...' : 'RUN COMPUTER VISION SCAN'}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* WORKFLOW PAPERLESS FORM & LOG LIST */}
-        <div className="p-4 rounded-xl border border-zinc-200 bg-white/70 shadow-sm flex flex-col justify-between">
-          <div>
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-3 flex items-center gap-1.5">
-              <Database size={13} />
-              Paperless Telemetry Logging Module
-            </h4>
-
-            {/* Compare Badge */}
-            <div className="mb-3.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[9px] font-mono text-emerald-800 flex items-center gap-1.5">
-              <Check size={12} />
-              <span>Optimized overhead: ~4s digital upload vs 5-day handwritten courier latency.</span>
-            </div>
-
-            {/* Inline submission form */}
-            <form onSubmit={handleSubmitLog} className="space-y-2.5">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[9px] font-mono text-zinc-500 uppercase mb-1">Observer Name</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Ashfaq Khan"
-                    value={observer}
-                    onChange={(e) => setObserver(e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-[10px] bg-white border border-zinc-200 rounded focus:border-cyan-500/30 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 text-zinc-900 placeholder-zinc-400 font-sans"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[9px] font-mono text-zinc-500 uppercase mb-1">Select Plot</label>
-                  <select
-                    value={plot}
-                    onChange={(e) => setPlot(e.target.value)}
-                    className="w-full px-2 py-1.5 text-[10px] bg-white border border-zinc-200 rounded focus:border-cyan-500/30 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 text-zinc-900 font-sans"
-                  >
-                    <option value="Plot D-4">Plot D-4 (Dasheri Zone)</option>
-                    <option value="Plot A-2">Plot A-2 (Chausa Zone)</option>
-                    <option value="Plot B-1">Plot B-1 (Langra Zone)</option>
-                    <option value="Plot F-9">Plot F-9 (Kesar Zone)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[9px] font-mono text-zinc-500 uppercase mb-1">Tissue Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-2 py-1.5 text-[10px] bg-white border border-zinc-200 rounded focus:border-cyan-500/30 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 text-zinc-900 font-sans"
-                  >
-                    <option value="Healthy">Healthy (Optimal)</option>
-                    <option value="Suspected Anthracnose">Suspected Anthracnose</option>
-                    <option value="Mildew Spots">Mildew Spotted</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[9px] font-mono text-zinc-500 uppercase mb-1">Remarks</label>
-                  <input
-                    type="text"
-                    placeholder="Optional remarks..."
-                    value={remarks}
-                    onChange={(e) => setRemarks(e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-[10px] bg-white border border-zinc-200 rounded focus:border-cyan-500/30 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 text-zinc-900 placeholder-zinc-400 font-sans"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-1.5 rounded-lg text-[10px] font-mono font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1 cursor-pointer"
-              >
-                <UploadCloud size={11} />
-                COMMIT NEW DIGITAL RECORD
-              </button>
-            </form>
-          </div>
-
-          {/* Active logs list */}
-          <div className="mt-4 pt-3.5 border-t border-zinc-100">
-            <h5 className="text-[10px] font-mono font-bold uppercase text-zinc-400 mb-2">Simulated DB Records Log</h5>
-            <div className="space-y-1.5 max-h-24 overflow-y-auto pr-1">
-              {logs.map((log) => (
-                <div key={log.id} className="flex items-center justify-between text-[10px] font-mono bg-zinc-50 p-1.5 rounded border border-zinc-200">
-                  <div className="flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${log.status.includes('Healthy') ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
-                    <span className="text-zinc-800 font-bold">{log.plot}</span>
-                    <span className="text-zinc-500">• {log.observer}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[9px]">
-                    <span className={`px-1 rounded text-[8px] ${log.status.includes('Healthy') ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'}`}>{log.status}</span>
-                    <span className="text-zinc-400">{log.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface ProjectsProps {
-  projects: Project[];
-  isAdmin: boolean;
-  onDeleteProject?: (id: string) => void;
-  onEditProject?: (p: Project) => void;
-}
-
-export default function Projects({ projects, isAdmin, onDeleteProject, onEditProject }: ProjectsProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'All' | 'React' | 'Node' | 'AI' | 'Full Stack' | 'UI'>('All');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [caseStudyProject, setCaseStudyProject] = useState<Project | null>(null);
-
-  // Pagination bounds
-  const itemsPerPage = 6;
-
-  // Filter & Search criteria
-  const filtered = projects.filter((project) => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          project.technologies.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesCategory = selectedCategory === 'All' || 
-                            project.category === selectedCategory || 
-                            project.technologies.some(tech => tech === selectedCategory);
-
-    return matchesSearch && matchesCategory;
+  const filteredProjects = initialProjects.filter(p => {
+    const query = searchTerm.toLowerCase().trim();
+    const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+    const matchesSearch = query === '' || 
+                          p.title.toLowerCase().includes(query) || 
+                          p.tagline.toLowerCase().includes(query) ||
+                          p.description.toLowerCase().includes(query) ||
+                          p.tags.some(t => t.toLowerCase().includes(query));
+    return matchesCategory && matchesSearch;
   });
 
-  // Pagination slicing
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginatedProjects = filtered.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const categories: Array<'All' | 'React' | 'Node' | 'AI' | 'Full Stack' | 'UI'> = [
-    'All', 'React', 'Node', 'AI', 'Full Stack', 'UI'
-  ];
-
-  const handleCategoryChange = (cat: typeof selectedCategory) => {
-    setSelectedCategory(cat);
-    setCurrentPage(1);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
-  };
-
   return (
-    <section id="projects-section" className="py-24 px-6 max-w-6xl mx-auto">
-      {/* SECTION HEADER */}
-      <div className="text-center mb-16">
+    <section id="projects-section" className="py-16 md:py-24 px-4 sm:px-6 max-w-6xl mx-auto">
+      {/* HEADER */}
+      <div className="text-center mb-12 md:mb-16">
         <h2 id="projects-title" className="text-3xl md:text-5xl font-black tracking-tight text-zinc-900 font-sans">
-          Curated <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600">Software Projects</span>
+          Featured <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600">Engineering</span> Projects
         </h2>
         <div className="w-16 h-1.5 bg-cyan-500 mx-auto rounded-full mt-4" />
-        <p className="text-xs font-mono text-zinc-400 mt-3 uppercase tracking-widest">
-          A showcase of full-stack engineering and algorithmic tracking systems
-        </p>
+        <p className="text-xs sm:text-sm text-zinc-500 mt-3 font-mono">Agri-Tech IoT systems, Web Apps, and Embedded Hardware</p>
       </div>
 
-      {/* FILTER & SEARCH BAR PANEL */}
-      <div 
-        id="projects-controls" 
-        className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-10 p-4 rounded-2xl border border-zinc-200 bg-white/80 backdrop-blur-md shadow-sm"
-      >
-        {/* Search input */}
-        <div className="relative flex-1">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
-            <Search size={16} />
-          </span>
-          <input
-            id="projects-search-input"
-            type="text"
-            placeholder="Search projects by name, technology, or specs..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-semibold bg-white text-zinc-900 border border-zinc-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder-zinc-400"
-          />
+      {/* FEATURED HIGHLIGHT: DASHERI SHIELD LIVE TELEMETRY DASHBOARD */}
+      <div className="mb-12 md:mb-16 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl glass-panel border border-cyan-200/80 shadow-xl space-y-5 sm:space-y-6">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-zinc-100 pb-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="p-2.5 sm:p-3 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-200 flex-shrink-0 mt-0.5 sm:mt-0">
+              <ShieldAlert size={22} className="sm:w-6 sm:h-6" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-mono font-bold text-[10px] uppercase">
+                  Agri-Tech Hackathon Finalist
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-mono font-bold text-[10px] uppercase border border-amber-200">
+                  Mobile-First 2G/3G Ready
+                </span>
+                <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">• Node Cluster: Plot D-4</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-zinc-900 mt-1.5">Dasheri Shield (AamRakshak) Telemetry Dashboard</h3>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              onClick={() => setIsStreaming(!isStreaming)}
+              className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-2 border transition-all cursor-pointer ${
+                isStreaming 
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
+                  : 'bg-zinc-100 border-zinc-200 text-zinc-600'
+              }`}
+            >
+              <RefreshCw size={14} className={isStreaming ? 'animate-spin' : ''} />
+              {isStreaming ? 'Pause Real-Time Stream' : 'Resume Telemetry Stream'}
+            </button>
+          </div>
         </div>
 
-        {/* Horizontal Category Filters */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          {categories.map((cat) => (
+        {/* METRICS ROW */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-zinc-200 shadow-xs">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono text-zinc-500 mb-1">
+              <span>Ambient Temp</span>
+              <Thermometer size={15} className="text-cyan-600" />
+            </div>
+            <span className="text-xl sm:text-2xl font-black text-zinc-900">{temp}°C</span>
+            <span className="text-[10px] font-mono text-emerald-600 block mt-1">Optimal Range</span>
+          </div>
+
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-zinc-200 shadow-xs">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono text-zinc-500 mb-1">
+              <span>Soil Moisture</span>
+              <Droplets size={15} className="text-blue-600" />
+            </div>
+            <span className="text-xl sm:text-2xl font-black text-zinc-900">{moisture}%</span>
+            <span className="text-[10px] font-mono text-cyan-600 block mt-1">Capacitive Sensor</span>
+          </div>
+
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-zinc-200 shadow-xs">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono text-zinc-500 mb-1">
+              <span>Air Humidity</span>
+              <Activity size={15} className="text-purple-600" />
+            </div>
+            <span className="text-xl sm:text-2xl font-black text-zinc-900">{humidity}%</span>
+            <span className="text-[10px] font-mono text-purple-600 block mt-1">DHT22 Module</span>
+          </div>
+
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-zinc-200 shadow-xs">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono text-zinc-500 mb-1">
+              <span>Leaf Wetness</span>
+              <Sparkles size={15} className="text-amber-600" />
+            </div>
+            <span className="text-xl sm:text-2xl font-black text-zinc-900">{lwd} hrs</span>
+            <span className="text-[10px] font-mono text-amber-600 block mt-1">Spore Risk Factor</span>
+          </div>
+        </div>
+
+        {/* RECHARTS REAL-TIME STREAMING VISUALIZER */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-zinc-200 space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-zinc-100 pb-3">
+            <div>
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
+                <BarChart3 size={16} className="text-cyan-600" />
+                <span>Live IoT Sensor Stream Plotted with Recharts</span>
+              </h4>
+              <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
+                Real-time multi-channel telemetry streams from LoRaWAN orchards
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1 sm:gap-2 bg-zinc-100 p-1 rounded-xl border border-zinc-200 w-full sm:w-auto overflow-x-auto">
+              <button
+                onClick={() => setChartTab('telemetry')}
+                className={`flex-1 sm:flex-none px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold uppercase cursor-pointer whitespace-nowrap ${
+                  chartTab === 'telemetry' ? 'bg-white text-cyan-700 shadow-xs' : 'text-zinc-500'
+                }`}
+              >
+                Telemetry
+              </button>
+              <button
+                onClick={() => setChartTab('trends')}
+                className={`flex-1 sm:flex-none px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold uppercase cursor-pointer whitespace-nowrap ${
+                  chartTab === 'trends' ? 'bg-white text-rose-700 shadow-xs' : 'text-zinc-500'
+                }`}
+              >
+                Disease Index
+              </button>
+              <button
+                onClick={() => setChartTab('plots')}
+                className={`flex-1 sm:flex-none px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold uppercase cursor-pointer whitespace-nowrap ${
+                  chartTab === 'plots' ? 'bg-white text-blue-700 shadow-xs' : 'text-zinc-500'
+                }`}
+              >
+                Plots Comparison
+              </button>
+            </div>
+          </div>
+
+          <div className="w-full h-52 sm:h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              {chartTab === 'telemetry' ? (
+                <AreaChart data={telemetryHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.35}/>
+                      <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0}/>
+                    </linearGradient>
+                    <linearGradient id="moistGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
+                  <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 100]} />
+                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }} />
+                  <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
+                  <Area type="monotone" dataKey="temp" name="Temp (°C)" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#tempGrad)" />
+                  <Area type="monotone" dataKey="moisture" name="Soil Moisture (%)" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#moistGrad)" />
+                  <Area type="monotone" dataKey="humidity" name="Humidity (%)" stroke="#a855f7" strokeWidth={2} fillOpacity={0} />
+                </AreaChart>
+              ) : chartTab === 'trends' ? (
+                <LineChart data={telemetryHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
+                  <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 100]} />
+                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }} />
+                  <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
+                  <Line type="monotone" dataKey="threat" name="Disease Risk Index (%)" stroke="#f43f5e" strokeWidth={2.5} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="lwd" name="Leaf Wetness (hrs)" stroke="#ec4899" strokeWidth={2} strokeDasharray="4 4" />
+                </LineChart>
+              ) : (
+                <BarChart data={plotComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} />
+                  <YAxis tick={{ fontSize: 9, fill: '#64748b', fontFamily: 'monospace' }} domain={[0, 60]} />
+                  <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '11px', fontFamily: 'monospace' }} />
+                  <Legend wrapperStyle={{ fontSize: '10px', fontFamily: 'monospace', paddingTop: '6px' }} />
+                  <Bar dataKey="temp" name="Temp (°C)" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="moisture" name="Moisture (%)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="threat" name="Threat Load (%)" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* FILTER & SEARCH BAR */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8 sm:mb-10">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+          {categories.map(cat => (
             <button
               key={cat}
-              id={`p-filter-${cat}`}
-              onClick={() => handleCategoryChange(cat)}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all border ${
-                selectedCategory === cat
-                  ? 'bg-cyan-50 text-cyan-600 border-cyan-200'
-                  : 'bg-transparent text-zinc-500 border-transparent hover:text-zinc-950 hover:bg-zinc-50'
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+                selectedCategory === cat 
+                  ? 'bg-zinc-900 text-white shadow-md' 
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
               {cat}
             </button>
           ))}
         </div>
+
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" size={15} />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Search projects..."
+            className="w-full pl-9 pr-8 py-2.5 rounded-xl border border-zinc-200 text-xs font-mono bg-white text-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500 transition-all"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 p-1"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* PROJECTS GRID CARD DISPLAY */}
-      {paginatedProjects.length > 0 ? (
-        <div id="projects-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paginatedProjects.map((project) => (
-            <div
-              key={project.id}
-              id={`project-card-${project.id}`}
-              className="group rounded-2xl overflow-hidden flex flex-col h-full relative cursor-pointer glass-panel glass-panel-hover"
-              onClick={() => setCaseStudyProject(project)}
-            >
-              {/* Image banner */}
-              <div className="h-44 w-full overflow-hidden relative bg-zinc-100 border-b border-zinc-200">
-                <img
-                  src={project.imageUrl}
-                  alt={project.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200">
-                  {project.category}
-                </span>
-                <span className={`absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-black ${
-                  project.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-                }`}>
-                  {project.status}
-                </span>
-              </div>
-
-              {/* Card info */}
-              <div className="p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900 group-hover:text-cyan-600 transition-colors line-clamp-1 mb-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs text-zinc-600 leading-relaxed line-clamp-3 mb-4">
-                    {project.description}
-                  </p>
-                </div>
-
-                {/* Tech tags */}
-                <div>
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {project.technologies.slice(0, 3).map((tech, i) => (
-                      <span key={i} className="text-[9px] font-mono text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-md">
-                        {tech}
-                      </span>
-                    ))}
-                    {project.technologies.length > 3 && (
-                      <span className="text-[9px] font-mono text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded-md">
-                        +{project.technologies.length - 3}
-                      </span>
-                    )}
+      {/* PROJECTS GRID */}
+      {filteredProjects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {filteredProjects.map(project => (
+          <div 
+            key={project.id} 
+            className={`group p-5 sm:p-6 rounded-2xl glass-panel border hover:border-cyan-300 shadow-md hover:shadow-xl transition-all flex flex-col justify-between space-y-4 overflow-hidden ${
+              project.id === 'dasheri-shield' ? 'border-cyan-300/80 bg-gradient-to-br from-cyan-50/30 via-white to-blue-50/20' : 'border-zinc-200/80'
+            }`}
+          >
+            <div>
+              {/* Project Card Image Banner */}
+              {project.image && (
+                <div 
+                  className="relative w-full h-44 sm:h-48 rounded-xl overflow-hidden mb-4 bg-zinc-950 border border-zinc-200/80 cursor-pointer"
+                  onClick={() => setSelectedProject(project)}
+                >
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                  <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-zinc-900/85 backdrop-blur-md text-cyan-400 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-700/60 flex items-center gap-1.5">
+                    <Sparkles size={12} />
+                    <span>Project Interface Preview</span>
                   </div>
-
-                  {/* Actions summary footer */}
-                  <div className="flex items-center justify-between border-t border-zinc-100 pt-3 mt-1 gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={() => setCaseStudyProject(project)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold text-cyan-700 bg-cyan-50/70 border border-cyan-100 hover:bg-cyan-50 transition-colors cursor-pointer"
-                    >
-                      <BookOpen size={11} />
-                      View Case Study
-                    </button>
-                    <button
-                      onClick={() => setSelectedProject(project)}
-                      className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer"
-                    >
-                      <span>Details & Specs</span>
-                      <ExternalLink size={11} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Admin overlays for deletion */}
-              {isAdmin && (
-                <div className="absolute top-2 left-2 flex gap-1 z-20" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => onEditProject && onEditProject(project)}
-                    className="p-1.5 rounded-lg bg-blue-500 text-white text-[10px] font-bold hover:bg-blue-400"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDeleteProject && onDeleteProject(project.id)}
-                    className="p-1.5 rounded-lg bg-red-600 text-white text-[10px] font-bold hover:bg-red-500"
-                  >
-                    Delete
-                  </button>
                 </div>
               )}
+
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-mono font-bold uppercase border border-cyan-200">
+                  {project.category}
+                </span>
+                {project.id === 'dasheri-shield' && (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-mono font-bold uppercase">
+                    ⭐ Featured Hackathon App
+                  </span>
+                )}
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-bold text-zinc-900 group-hover:text-cyan-600 transition-colors">{project.title}</h3>
+              <p className="text-xs text-zinc-500 font-mono mt-1 mb-3">{project.tagline}</p>
+
+              {/* HIGHLIGHT PROMINENT SUMMARY FOR DASHERI SHIELD */}
+              {project.id === 'dasheri-shield' ? (
+                <div className="mb-4 space-y-2.5">
+                  <p className="text-xs sm:text-sm text-zinc-700 leading-relaxed font-sans font-medium">
+                    {project.description}
+                  </p>
+                  
+                  {/* MOBILE & DESKTOP QUICK FEATURE HIGHLIGHTS */}
+                  <div className="p-3 rounded-xl bg-white/80 border border-cyan-200/80 space-y-1.5 font-sans text-xs">
+                    <span className="text-[10px] font-mono font-bold text-cyan-900 uppercase tracking-wider block">
+                      ⚡ Key Mobile-First Highlights:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] text-zinc-700">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 size={13} className="text-cyan-600 flex-shrink-0" />
+                        <span>Simulated Edge AI Disease Identification</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 size={13} className="text-cyan-600 flex-shrink-0" />
+                        <span>Client-Side Inventory Shelf-Life Risk Alerts</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 size={13} className="text-cyan-600 flex-shrink-0" />
+                        <span>Direct Farmer-to-Buyer <code className="bg-zinc-100 px-1 rounded text-[10px]">tel:</code> Marketplace</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 size={13} className="text-cyan-600 flex-shrink-0" />
+                        <span>Bilingual (English/Hindi) High-Contrast UI</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed mb-4">{project.description}</p>
+              )}
+              
+              <div className="flex flex-wrap gap-1.5">
+                {project.tags.map(t => (
+                  <span key={t} className="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[10px] font-mono border border-zinc-200">
+                    #{t}
+                  </span>
+                ))}
+              </div>
             </div>
-          ))}
+
+            <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
+              <button
+                onClick={() => setSelectedProject(project)}
+                className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs min-h-[42px]"
+              >
+                <Eye size={15} /> Case Study
+              </button>
+              {project.githubUrl && (
+                <a 
+                  href={project.githubUrl} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors min-h-[42px]"
+                >
+                  <Github size={15} /> Code
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
         </div>
       ) : (
-        <div id="projects-empty-state" className="flex flex-col items-center justify-center p-12 border border-dashed border-zinc-200 rounded-2xl bg-zinc-50 text-center">
-          <AlertCircle className="text-zinc-400 mb-3" size={28} />
-          <p className="text-xs font-mono text-zinc-500">No projects found matching current queries</p>
-        </div>
-      )}
-
-      {/* PAGINATION SWITCHES */}
-      {totalPages > 1 && (
-        <div id="projects-pagination" className="flex items-center justify-center gap-4 mt-12">
+        <div className="text-center py-16 p-8 rounded-3xl bg-white/60 border border-zinc-200/80 space-y-3">
+          <Code2 size={32} className="mx-auto text-zinc-400" />
+          <h3 className="font-bold text-zinc-800 text-base font-sans">No matching projects found</h3>
+          <p className="text-xs text-zinc-500 font-mono max-w-md mx-auto">
+            Try searching for <span className="text-cyan-600 font-bold">IoT</span>, <span className="text-cyan-600 font-bold">React</span>, <span className="text-cyan-600 font-bold">ESP32</span>, or <span className="text-cyan-600 font-bold">TypeScript</span>.
+          </p>
           <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-zinc-200 bg-white text-zinc-500 hover:text-zinc-900 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-sm"
+            onClick={() => {
+              setSearchTerm('');
+              setSelectedCategory('All');
+            }}
+            className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-mono font-bold hover:bg-zinc-800 transition-colors mt-2"
           >
-            <ChevronLeft size={16} />
-          </button>
-          <span className="text-xs font-mono text-zinc-500 font-bold">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-zinc-200 bg-white text-zinc-500 hover:text-zinc-900 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-sm"
-          >
-            <ChevronRight size={16} />
+            Reset Filters
           </button>
         </div>
       )}
 
-      {/* DETAIL MODAL EXPAND DRAWER */}
+      {/* CASE STUDY MODAL - CROSS PLATFORM OPTIMIZED (MOBILE / WINDOWS / MAC) */}
       {selectedProject && (
-        <div 
-          id="project-detail-modal-root" 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4"
-          onClick={() => setSelectedProject(null)}
-        >
-          <div 
-            id="project-detail-modal"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-3xl rounded-2xl p-6 text-left relative max-h-[90vh] overflow-y-auto text-zinc-800 glass-modal"
-          >
-            {/* Close Button */}
-            <button 
-              id="modal-close-btn"
-              onClick={() => setSelectedProject(null)}
-              className="absolute top-4 right-4 p-1.5 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-xl transition-all cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            {/* Banner */}
-            <div className="h-64 w-full rounded-xl overflow-hidden relative mb-6 border border-zinc-200 bg-zinc-100">
-              <img
-                src={selectedProject.imageUrl}
-                alt={selectedProject.title}
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
-                <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-200">
-                  {selectedProject.category}
-                </span>
-                <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold text-zinc-200 bg-black/60 border border-white/10">
-                  {selectedProject.date}
-                </span>
-              </div>
-            </div>
-
-            {/* Header info */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div className="fixed inset-0 z-50 bg-zinc-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-2 sm:p-4">
+          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-zinc-200 max-h-[92vh] sm:max-h-[85vh] flex flex-col">
+            {/* STICKY MODAL HEADER */}
+            <div className="px-5 py-4 border-b border-zinc-100 flex items-start justify-between gap-3 bg-zinc-50/80 backdrop-blur-xs flex-shrink-0">
               <div>
-                <h3 className="text-xl sm:text-2xl font-black text-zinc-900">{selectedProject.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-zinc-500">
-                  <CheckCircle2 size={13} className="text-emerald-500" />
-                  <span className="font-semibold">{selectedProject.status}</span>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-mono font-bold uppercase border border-cyan-200">
+                    {selectedProject.category}
+                  </span>
+                  {selectedProject.id === 'dasheri-shield' && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-mono font-bold uppercase">
+                      AgriTech Hackathon Prototype
+                    </span>
+                  )}
                 </div>
+                <h3 className="text-xl sm:text-2xl font-black text-zinc-900 mt-1 font-sans">{selectedProject.title}</h3>
+                <p className="text-xs font-mono text-zinc-500 mt-0.5">{selectedProject.tagline}</p>
               </div>
-
-              {/* Code repos / Live URL */}
-              <div className="flex items-center gap-2">
-                {selectedProject.gitHubUrl && (
-                  <a
-                    href={selectedProject.gitHubUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-zinc-600 hover:text-zinc-900 bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-all"
-                  >
-                    <Github size={13} />
-                    GitHub
-                  </a>
-                )}
-                {selectedProject.liveDemoUrl && (
-                  <a
-                    href={selectedProject.liveDemoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-sm transition-all"
-                  >
-                    <ExternalLink size={13} />
-                    Live Demo
-                  </a>
-                )}
-              </div>
+              <button 
+                onClick={() => setSelectedProject(null)}
+                className="p-2.5 rounded-xl bg-zinc-200/60 hover:bg-zinc-200 text-zinc-700 transition-colors cursor-pointer flex-shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+                aria-label="Close Case Study"
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            {/* Core Description & Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
-              
-              {/* Left Column (Main study) */}
-              <div className="md:col-span-2">
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-2">Project Retrospective</h4>
-                <p className="text-xs text-zinc-600 leading-relaxed mb-6">
-                  {selectedProject.description}
-                </p>
+            {/* MODAL BODY */}
+            <div className="p-4 sm:p-6 space-y-6 overflow-y-auto flex-1">
+              {selectedProject.image && (
+                <div className="w-full h-44 sm:h-60 rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-200 shadow-md">
+                  <img 
+                    src={selectedProject.image} 
+                    alt={selectedProject.title}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
-                {selectedProject.caseStudy && (
-                  <div className="mb-6">
-                    <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-2">Technical Case Study</h4>
-                    <p className="text-xs text-zinc-600 leading-relaxed bg-zinc-50 p-3.5 rounded-xl border border-zinc-200 whitespace-pre-line">
-                      {selectedProject.caseStudy}
-                    </p>
-                  </div>
-                )}
+              <div className="space-y-5 text-sm text-zinc-700 leading-relaxed font-sans">
+                <div>
+                  <h4 className="font-bold text-zinc-900 font-mono text-xs uppercase tracking-wider text-cyan-600 mb-1.5 flex items-center gap-1.5">
+                    <BookOpen size={15} /> Executive Overview
+                  </h4>
+                  <p className="text-zinc-700 text-xs sm:text-sm leading-relaxed">{selectedProject.description}</p>
+                </div>
 
-                {selectedProject.id === 'dasheri-shield' && (
-                  <div className="mb-6 border-t border-zinc-100 pt-6">
-                    <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-2">Dasheri Shield Live System Dashboard</h4>
-                    <DasheriShieldDashboard />
+                {selectedProject.id === 'dasheri-shield' ? (
+                  <div className="space-y-4">
+                    {/* PROJECT CONTEXT */}
+                    <div className="p-4 rounded-xl bg-cyan-50/70 border border-cyan-200 text-xs space-y-1.5 font-sans">
+                      <h5 className="font-bold font-mono text-cyan-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <Trophy size={14} className="text-cyan-600" /> Project Context & Challenge
+                      </h5>
+                      <p className="text-zinc-800 leading-relaxed">
+                        This project was developed as an AgriTech hackathon prototype targeting the Malihabad mango-farming belt. The core engineering challenge was designing a highly accessible, lightweight interface for a demographic with spotty internet connectivity and entry-level mobile hardware.
+                      </p>
+                    </div>
+
+                    {/* TECHNOLOGIES USED */}
+                    <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200 space-y-2 font-mono text-xs">
+                      <h5 className="font-bold text-zinc-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <Code2 size={14} className="text-cyan-600" /> Technologies & Architecture
+                      </h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 font-sans text-xs">
+                        <div className="p-3 rounded-xl bg-white border border-zinc-200">
+                          <span className="font-mono text-[10px] font-bold text-zinc-400 block uppercase">Frontend</span>
+                          <span className="font-semibold text-zinc-800">HTML5, CSS3, Vanilla JS (ES6+)</span>
+                        </div>
+                        <div className="p-3 rounded-xl bg-white border border-zinc-200">
+                          <span className="font-mono text-[10px] font-bold text-zinc-400 block uppercase">Architecture</span>
+                          <span className="font-semibold text-zinc-800">SPA Simulation via DOM Manipulation</span>
+                        </div>
+                        <div className="p-3 rounded-xl bg-white border border-zinc-200">
+                          <span className="font-mono text-[10px] font-bold text-zinc-400 block uppercase">Design Focus</span>
+                          <span className="font-semibold text-zinc-800">Mobile-First, CSS Variables, High-Contrast</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CORE FEATURES */}
+                    <div className="p-4 sm:p-5 rounded-xl bg-zinc-50 border border-zinc-200 space-y-3 font-sans text-xs">
+                      <h5 className="font-bold font-mono text-zinc-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                        <Zap size={14} className="text-amber-500" /> Core Engineered Features
+                      </h5>
+                      <ul className="space-y-3">
+                        <li className="flex items-start gap-2.5">
+                          <div className="p-1 rounded-md bg-cyan-100 text-cyan-700 mt-0.5 flex-shrink-0">
+                            <CheckCircle2 size={14} />
+                          </div>
+                          <div>
+                            <strong className="text-zinc-900 font-bold block">Simulated Edge AI Interface:</strong>
+                            <span className="text-zinc-600">A frontend module simulating image processing for crop disease detection with localized UI feedback.</span>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <div className="p-1 rounded-md bg-cyan-100 text-cyan-700 mt-0.5 flex-shrink-0">
+                            <CheckCircle2 size={14} />
+                          </div>
+                          <div>
+                            <strong className="text-zinc-900 font-bold block">Dynamic Inventory Dashboard:</strong>
+                            <span className="text-zinc-600">Client-side rendering of inventory status cards featuring color-coded risk alerts based on harvest shelf-life.</span>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <div className="p-1 rounded-md bg-cyan-100 text-cyan-700 mt-0.5 flex-shrink-0">
+                            <CheckCircle2 size={14} />
+                          </div>
+                          <div>
+                            <strong className="text-zinc-900 font-bold block">Direct Marketplace Directory:</strong>
+                            <span className="text-zinc-600">Integrated <code className="bg-zinc-200 px-1 py-0.5 rounded text-[11px] font-mono">tel:</code> URI schemes enabling direct farmer-to-buyer communication, bypassing traditional intermediaries.</span>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <div className="p-1 rounded-md bg-cyan-100 text-cyan-700 mt-0.5 flex-shrink-0">
+                            <CheckCircle2 size={14} />
+                          </div>
+                          <div>
+                            <strong className="text-zinc-900 font-bold block">Bilingual UI:</strong>
+                            <span className="text-zinc-600">Designed for users with limited digital literacy, featuring a dual-language (English/Hindi) interface and a reliance on accessible visual cues.</span>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <div className="p-1 rounded-md bg-cyan-100 text-cyan-700 mt-0.5 flex-shrink-0">
+                            <CheckCircle2 size={14} />
+                          </div>
+                          <div>
+                            <strong className="text-zinc-900 font-bold block">Low-Bandwidth Optimization:</strong>
+                            <span className="text-zinc-600">Engineered without heavy frontend frameworks to ensure a rapid Time to Interactive (TTI) on 2G/3G networks.</span>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                )}
+                ) : selectedProject.details ? (
+                  <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200 text-xs space-y-2 font-mono">
+                    <h4 className="font-bold text-zinc-900 uppercase">Engineering Details & Impact</h4>
+                    <p className="whitespace-pre-line text-zinc-600">{selectedProject.details}</p>
+                  </div>
+                ) : null}
 
                 <div>
-                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-700 mb-3">Key Features Implemented</h4>
-                  <ul className="flex flex-col gap-2.5">
-                    {selectedProject.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-xs text-zinc-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-1.5 flex-shrink-0" />
-                        <span>{feat}</span>
-                      </li>
+                  <h4 className="font-bold text-zinc-900 font-mono text-xs uppercase tracking-wider mb-2">Technologies Used</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.tags.map(tag => (
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-800 text-xs font-mono border border-zinc-200">
+                        #{tag}
+                      </span>
                     ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Right Column (Specifications) */}
-              <div className="md:col-span-1 p-4 rounded-xl border border-zinc-200 bg-zinc-50/50 h-fit">
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-pink-600 mb-3">Project Tech Stack</h4>
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {selectedProject.technologies.map((tech, i) => (
-                    <span key={i} className="text-[10px] font-mono text-zinc-700 bg-white border border-zinc-200/60 px-2.5 py-1 rounded-md shadow-xs">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex flex-col gap-3 text-xs border-t border-zinc-200 pt-4 text-zinc-500 font-mono">
-                  <div className="flex items-center justify-between">
-                    <span>Launched:</span>
-                    <span className="text-zinc-800 font-sans font-medium">{selectedProject.date}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Category:</span>
-                    <span className="text-zinc-800 font-sans font-medium">{selectedProject.category}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Classification:</span>
-                    <span className="text-zinc-800 font-sans font-medium">{selectedProject.status}</span>
                   </div>
                 </div>
               </div>
-
             </div>
 
+            {/* STICKY FOOTER */}
+            <div className="px-5 py-3.5 border-t border-zinc-100 flex flex-wrap items-center justify-end gap-2.5 bg-zinc-50/80 backdrop-blur-xs flex-shrink-0">
+              {selectedProject.githubUrl && (
+                <a 
+                  href={selectedProject.githubUrl} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-mono font-bold flex items-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Github size={14} /> View GitHub Repo
+                </a>
+              )}
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="px-4 py-2.5 rounded-xl bg-zinc-200/80 hover:bg-zinc-200 text-zinc-800 text-xs font-mono font-bold cursor-pointer transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-
-      {/* CASE STUDY MODAL */}
-      {caseStudyProject && (() => {
-        const parsed = parseCaseStudy(caseStudyProject.caseStudy);
-        return (
-          <div 
-            id="case-study-modal-root" 
-            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4 animate-fade-in"
-            onClick={() => setCaseStudyProject(null)}
-          >
-            <div 
-              id="case-study-modal"
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-3xl rounded-2xl p-6 text-left relative max-h-[90vh] overflow-y-auto text-zinc-800 flex flex-col gap-6 glass-modal"
-            >
-              {/* Close Button */}
-              <button 
-                id="case-study-close-btn"
-                onClick={() => setCaseStudyProject(null)}
-                className="absolute top-4 right-4 p-1.5 text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 rounded-xl transition-all cursor-pointer border border-zinc-200 shadow-xs bg-white"
-              >
-                <X size={18} />
-              </button>
-
-              {/* Title Header */}
-              <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold text-cyan-700 bg-cyan-50 border border-cyan-100 uppercase tracking-wider">
-                    {caseStudyProject.category}
-                  </span>
-                  <span className="text-[10px] font-mono text-zinc-400">•</span>
-                  <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">
-                    {caseStudyProject.date}
-                  </span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 font-sans">
-                  Case Study: {caseStudyProject.title}
-                </h3>
-              </div>
-
-              {/* Image Banner */}
-              <div className="h-56 w-full rounded-xl overflow-hidden relative border border-zinc-200 bg-zinc-100">
-                <img
-                  src={caseStudyProject.imageUrl}
-                  alt={caseStudyProject.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              </div>
-
-              {/* Structured Retrospective Content */}
-              <div className="space-y-6">
-                {/* 1. Challenge */}
-                {parsed.challenge && (
-                  <div className="p-5 rounded-xl border border-rose-100 bg-rose-50/20 border-l-4 border-l-rose-500">
-                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-rose-700 mb-2 flex items-center gap-1.5">
-                      <AlertCircle size={14} className="text-rose-500" />
-                      01 / The Challenge
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
-                      {parsed.challenge}
-                    </p>
-                  </div>
-                )}
-
-                {/* 2. Solution */}
-                {parsed.solution && (
-                  <div className="p-5 rounded-xl border border-cyan-100 bg-cyan-50/20 border-l-4 border-l-cyan-500">
-                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-cyan-700 mb-2 flex items-center gap-1.5">
-                      <Cpu size={14} className="text-cyan-500" />
-                      02 / The Solution
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
-                      {parsed.solution}
-                    </p>
-                  </div>
-                )}
-
-                {/* 3. Outcome */}
-                {parsed.outcome && (
-                  <div className="p-5 rounded-xl border border-emerald-100 bg-emerald-50/10 border-l-4 border-l-emerald-500">
-                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 mb-2 flex items-center gap-1.5">
-                      <Trophy size={14} className="text-emerald-500" />
-                      03 / The Outcome & Achievements
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
-                      {parsed.outcome}
-                    </p>
-                  </div>
-                )}
-
-                {/* 4. Roadmap */}
-                {parsed.roadmap && (
-                  <div className="p-5 rounded-xl border border-violet-100 bg-violet-50/10 border-l-4 border-l-violet-500">
-                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-violet-700 mb-2 flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-violet-500" />
-                      04 / Future Vision & Roadmap
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed font-sans font-normal">
-                      {parsed.roadmap}
-                    </p>
-                  </div>
-                )}
-
-                {/* Fallback Text if non-structured */}
-                {parsed.fallbackText && (
-                  <div className="p-5 rounded-xl border border-zinc-200 bg-zinc-50/50">
-                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-600 mb-2 flex items-center gap-1.5">
-                      <BookOpen size={14} />
-                      Project Retrospective Case Study
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-zinc-700 leading-relaxed whitespace-pre-line">
-                      {parsed.fallbackText}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Action Buttons Footer */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-zinc-100 pt-5 mt-2">
-                <div className="flex items-center gap-2">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black ${
-                    caseStudyProject.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-                  }`}>
-                    {caseStudyProject.status}
-                  </span>
-                </div>
-                
-                <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                  <button
-                    onClick={() => {
-                      setSelectedProject(caseStudyProject);
-                      setCaseStudyProject(null);
-                    }}
-                    className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-zinc-600 hover:text-zinc-900 bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-all cursor-pointer"
-                  >
-                    <Activity size={13} />
-                    Interactive Specs & Sandbox
-                  </button>
-                  
-                  <button
-                    onClick={() => setCaseStudyProject(null)}
-                    className="flex-1 sm:flex-initial flex items-center justify-center px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-sm transition-all cursor-pointer"
-                  >
-                    Done Reading
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        );
-      })()}
     </section>
   );
-}
-
-// --- CASE STUDY PARSER HELPERS ---
-interface ParsedCaseStudy {
-  challenge?: string;
-  solution?: string;
-  outcome?: string;
-  roadmap?: string;
-  fallbackText?: string;
-}
-
-function parseCaseStudy(text?: string): ParsedCaseStudy {
-  if (!text) return {};
-  
-  const result: ParsedCaseStudy = {};
-  
-  // Find sections
-  const problemRegex = /(?:THE PROBLEM|CHALLENGE):?([\s\S]*?)(?=(?:THE SOLUTION|SOLUTION|KEY ACHIEVEMENTS|OUTCOME|FUTURE ROADMAP|$))/i;
-  const solutionRegex = /(?:THE SOLUTION|SOLUTION):?([\s\S]*?)(?=(?:THE PROBLEM|CHALLENGE|KEY ACHIEVEMENTS|OUTCOME|FUTURE ROADMAP|$))/i;
-  const outcomeRegex = /(?:KEY ACHIEVEMENTS|OUTCOME):?([\s\S]*?)(?=(?:THE PROBLEM|CHALLENGE|THE SOLUTION|SOLUTION|FUTURE ROADMAP|$))/i;
-  const roadmapRegex = /(?:FUTURE ROADMAP|ROADMAP):?([\s\S]*?)(?=(?:THE PROBLEM|CHALLENGE|THE SOLUTION|SOLUTION|KEY ACHIEVEMENTS|OUTCOME|$))/i;
-
-  const problemMatch = text.match(problemRegex);
-  const solutionMatch = text.match(solutionRegex);
-  const outcomeMatch = text.match(outcomeRegex);
-  const roadmapMatch = text.match(roadmapRegex);
-
-  if (problemMatch) result.challenge = problemMatch[1].trim();
-  if (solutionMatch) result.solution = solutionMatch[1].trim();
-  if (outcomeMatch) result.outcome = outcomeMatch[1].trim();
-  if (roadmapMatch) result.roadmap = roadmapMatch[1].trim();
-
-  if (!problemMatch && !solutionMatch && !outcomeMatch) {
-    result.fallbackText = text;
-  }
-
-  return result;
 }

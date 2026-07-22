@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowDown, Mail, Briefcase, Download, ExternalLink } from 'lucide-react';
-import userProfileImg from '../assets/images/user_profile_photo_1784629749234.jpg';
+import userProfileImg from '../assets/images/ashfaq_profile_photo_1784734869215.jpg';
 
 interface HeroProps {
   onNavigate: (section: string) => void;
@@ -72,13 +72,13 @@ export default function Hero({ onNavigate, onDownloadResume, settings }: HeroPro
       <div className="relative mb-6 group select-none">
         <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-400 to-pink-500 opacity-25 blur-md group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
         <img
-          src={userProfileImg}
+          src={typeof userProfileImg === 'string' ? userProfileImg : (userProfileImg as any)?.src || '/assets/images/ashfaq_profile_photo_1784734869215.jpg'}
           alt="Mohd. Ashfaq Khan"
           referrerPolicy="no-referrer"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.onerror = null;
-            target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
+            target.src = '/assets/images/ashfaq_profile_photo_1784734869215.jpg';
           }}
           className="relative w-28 h-36 md:w-32 md:h-40 rounded-2xl object-cover object-top border-2 border-white shadow-md bg-white"
         />
@@ -114,7 +114,7 @@ export default function Hero({ onNavigate, onDownloadResume, settings }: HeroPro
         id="hero-bio"
         className="text-sm md:text-base text-zinc-600 max-w-2xl leading-relaxed mb-10 font-sans px-2"
       >
-        {settings.bio}
+        {settings?.bio || "Computer Science undergraduate (B.Tech expected 2027) with foundational skills in C, Python, Data Structures & Algorithms, and hands-on frontend web development experience. Built and presented 'The Dasheri Shield' Agri-Tech prototype ranking top 15 out of 44 teams at a university hackathon."}
       </p>
 
       {/* CALL TO ACTION BUTTONS */}

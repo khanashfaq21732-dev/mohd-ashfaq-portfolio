@@ -6,189 +6,138 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import ThreeCanvas from './components/ThreeCanvas';
+import { motion } from 'motion/react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
-import BlogCMS from './components/Blog';
+import Blog from './components/Blog';
 import Gallery from './components/Gallery';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
+import Footer from './components/Footer';
 import AdminDashboard from './components/AdminDashboard';
-import SubscribeForm from './components/SubscribeForm';
-import { Project, Blog, Skill, Experience, Testimonial, GalleryItem, SystemSettings } from './types';
-import { Sparkles, Terminal } from 'lucide-react';
+import ThreeCanvas from './components/ThreeCanvas';
+import SectionDivider from './components/SectionDivider';
+import ResumeModal from './components/ResumeModal';
+import { Experience } from './types';
 
 export default function App() {
-  // --- CORE STATE ---
   const [activeSection, setActiveSection] = useState('home');
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // --- DATA STATES ---
-  const [settings, setSettings] = useState<SystemSettings | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [gallery, setGallery] = useState<GalleryItem[]>([]);
-
-  // --- RE-FETCH UTILITY ---
-  const loadPortfolioData = () => {
-    Promise.all([
-      fetch('/api/settings').then(res => res.json()),
-      fetch('/api/projects').then(res => res.json()),
-      fetch('/api/blogs').then(res => res.json()),
-      fetch('/api/skills').then(res => res.json()),
-      fetch('/api/experiences').then(res => res.json()),
-      fetch('/api/testimonials').then(res => res.json()),
-      fetch('/api/gallery').then(res => res.json())
-    ])
-    .then(([settingsData, projectsData, blogsData, skillsData, expData, testData, galData]) => {
-      setSettings(settingsData);
-      setProjects(projectsData);
-      setBlogs(blogsData);
-      setSkills(skillsData);
-      setExperiences(expData);
-      setTestimonials(testData);
-      setGallery(galData);
-      setIsLoading(false);
-    })
-    .catch((err) => {
-      console.error("Critical error parsing full-stack database APIs:", err);
-      setIsLoading(false);
-    });
-  };
-
-  // --- INITIALIZATION MOUNT ---
   useEffect(() => {
-    // 1. Fetch data
-    loadPortfolioData();
-
-    // 2. Validate current auth session
-    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const authHeaders: Record<string, string> = storedToken ? { 'Authorization': `Bearer ${storedToken}` } : {};
-
-    fetch('/api/auth/me', { headers: authHeaders })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) {
-          setCurrentUser(data.user);
-        }
-      })
-      .catch(err => console.error("Session check skipped:", err));
-
-    // 3. Register visitor analytics log to Recharts database
-    fetch('/api/analytics/log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ referrer: document.referrer || 'Direct Entry / Recruiter' })
-    }).catch(err => console.error("Analytics log bypassed:", err));
-  }, []);
-
-  // --- INTERSECTION OBSERVER FOR ACTIVE SECTION HIGHLIGHTS ---
-  useEffect(() => {
-    const sections = ['hero-section', 'about-section', 'skills-section', 'projects-section', 'blog-section', 'gallery-section', 'testimonials-section', 'contact-section'];
-    
-    const handleScroll = () => {
-      const scrollPos = window.scrollY + 200; // Offset
-      
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
-            let mappedId = 'home';
-            if (sectionId === 'about-section') mappedId = 'about';
-            else if (sectionId === 'skills-section') mappedId = 'skills';
-            else if (sectionId === 'projects-section') mappedId = 'projects';
-            else if (sectionId === 'blog-section') mappedId = 'blog';
-            else if (sectionId === 'gallery-section') mappedId = 'gallery';
-            else if (sectionId === 'testimonials-section') mappedId = 'testimonials';
-            else if (sectionId === 'contact-section') mappedId = 'contact';
-            
-            setActiveSection(mappedId);
-            break;
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated && data.user) {
+            setCurrentUser(data.user);
           }
         }
+      } catch (err) {
+        // Silent fail if backend offline
       }
     };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    checkAuth();
   }, []);
 
-  // --- NAVIGATION ACTION ---
-  const handleNavigate = (sectionId: string) => {
-    let targetElId = 'hero-section';
-    if (sectionId === 'about') targetElId = 'about-section';
-    else if (sectionId === 'skills') targetElId = 'skills-section';
-    else if (sectionId === 'projects') targetElId = 'projects-section';
-    else if (sectionId === 'blog') targetElId = 'blog-section';
-    else if (sectionId === 'gallery') targetElId = 'gallery-section';
-    else if (sectionId === 'testimonials') targetElId = 'testimonials-section';
-    else if (sectionId === 'contact') targetElId = 'contact-section';
-
-    const el = document.getElementById(targetElId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setActiveSection(sectionId);
-    }
-  };
-
-  // --- RESUME DOWNLOAD ACTION ---
-  const handleDownloadResume = () => {
-    const link = document.createElement('a');
-    link.href = '/api/resume/download';
-    link.setAttribute('download', 'Resume_Mohd_Ashfaq_Khan.txt');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleLoginSuccess = (user: any) => {
+    setCurrentUser(user);
   };
 
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
-      setCurrentUser(null);
-      setShowAdmin(false);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
+    }
+    setCurrentUser(null);
+  };
+
+  const experiences: Experience[] = [
+    {
+      id: 'edu-1',
+      title: 'B.Tech in Computer Science & Engineering',
+      organization: 'Shri Ramswaroop Memorial University',
+      company: 'Expected 2027 | CGPA: 6.54 / 10',
+      period: '2023 - 2027',
+      type: 'education',
+      description: 'Strengthening Data Structures & Algorithms (DSA), C Programming, Python, Web Engineering, and System Design concepts. Actively participating in university hackathons and collaborative coding projects.'
+    },
+    {
+      id: 'edu-2',
+      title: 'Class XII (ISC)',
+      organization: 'S.T. Dominic Savio College, Lucknow',
+      company: 'Score: 57%',
+      period: '2022',
+      type: 'education',
+      description: 'Completed senior secondary education under the ISC board with focus on Science and Mathematics.'
+    },
+    {
+      id: 'edu-3',
+      title: 'Class X (CISCE)',
+      organization: 'S.T. Dominic Savio College, Lucknow',
+      company: 'Score: 71.4%',
+      period: '2020',
+      type: 'education',
+      description: 'Completed high school education under the CISCE board with distinction in computer applications.'
+    },
+    {
+      id: 'ach-1',
+      title: 'University Hackathon Finalist — Top 15 of 44 Teams',
+      organization: 'University Innovation Challenge',
+      company: 'Agri-Tech Solutions Division',
+      period: '2026',
+      type: 'achievement',
+      description: 'Ranked in the top 15 out of 44 competing teams for solution design and execution. Developed and presented "Dasheri Shield (AamRakshak)", a mobile-first Agri-Tech web app for disease identification and direct farmer-to-buyer sales.'
+    },
+    {
+      id: 'work-1',
+      title: 'Agri-Tech Frontend Developer — Dasheri Shield (AamRakshak)',
+      organization: 'AgriTech Hackathon Prototype',
+      company: 'Mobile-First SPA & Edge AI Simulation',
+      period: '2026',
+      type: 'work',
+      description: [
+        'Developed a mobile-first frontend web app (HTML5, CSS3, ES6+ Vanilla JS) targeting the Malihabad mango-farming belt for low-bandwidth 2G/3G networks.',
+        'Features simulated Edge AI crop disease identification, client-side inventory shelf-life risk alerts, bilingual (English/Hindi) high-contrast UI, and direct farmer-to-buyer tel: marketplace links.'
+      ]
+    }
+  ];
+
+  const handleNavigate = (section: string) => {
+    setActiveSection(section);
+    const element = document.getElementById(`${section}-section`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    } else if (section === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  // --- LOADING FALLBACK COVER ---
-  if (isLoading || !settings) {
-    return (
-      <div 
-        id="app-loader-root" 
-        className="fixed inset-0 z-50 bg-zinc-50 flex flex-col items-center justify-center text-center gap-4 text-zinc-900"
-      >
-        <div className="w-16 h-16 rounded-full border-t-2 border-r-2 border-cyan-500 animate-spin flex items-center justify-center shadow-md">
-          <span className="font-mono text-[10px] font-black text-cyan-600">MAK</span>
-        </div>
-        <div>
-          <h2 className="text-sm font-black tracking-widest uppercase font-sans text-zinc-800 flex items-center justify-center gap-1.5">
-            Loading Portfolio
-          </h2>
-          <p className="text-[10px] font-mono text-zinc-500 mt-1 uppercase tracking-widest">Preparing Mohd. Ashfaq Khan's projects & milestones...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleDownloadResume = () => {
+    setIsResumeModalOpen(true);
+    // Also trigger instant file download for seamless UX
+    const link = document.createElement('a');
+    link.href = '/Mohd_Ashfaq_Khan_Resume.html';
+    link.download = 'Mohd_Ashfaq_Khan_Resume.html';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-  // --- PORTFOLIO PRESENTATION LAYOUT ---
   return (
-    <div id="portfolio-app-shell" className="relative min-h-screen text-zinc-800 selection:bg-cyan-100 selection:text-cyan-950 bg-zinc-50">
-      
-      {/* 3D CANVAS BACKGROUND */}
-      <ThreeCanvas interactive={true} />
+    <div className="relative min-h-screen bg-zinc-50 text-zinc-900 selection:bg-cyan-500 selection:text-white">
+      {/* THREE.JS WEBGL PARTICLES BACKDROP */}
+      <ThreeCanvas />
 
-      {/* FLOATING HEADER NAVBAR */}
+      {/* NAVBAR */}
       <Navbar 
         activeSection={activeSection}
         onNavigate={handleNavigate}
@@ -197,83 +146,87 @@ export default function App() {
         onOpenAdmin={() => setShowAdmin(true)}
       />
 
-      {/* VIEWPORT CANVAS SECTIONS CONTAINER */}
-      <main id="portfolio-sections-container">
-        
-        {/* HERO SECTION */}
-        <Hero 
-          onNavigate={handleNavigate}
-          onDownloadResume={handleDownloadResume}
-          settings={settings}
-        />
+      {/* HERO */}
+      <Hero 
+        onNavigate={handleNavigate}
+        onDownloadResume={handleDownloadResume}
+        settings={{}}
+      />
 
-        {/* ABOUT & TIMELINE Milestones */}
-        <About 
-          experiences={experiences}
-          onDownloadResume={handleDownloadResume}
-        />
-
-        {/* SKILLS GALAXY MAP */}
-        <Skills skills={skills} />
-
-        {/* CURATED CURRICULUM PROJECTS SYSTEM */}
-        <Projects 
-          projects={projects}
-          isAdmin={currentUser?.role === 'admin'}
-          onDeleteProject={(id) => {}}
-          onEditProject={(p) => {}}
-        />
-
-        {/* ADVANCED CMS BLOG SYSTEM */}
-        <BlogCMS 
-          blogs={blogs}
-          isAdmin={currentUser?.role === 'admin'}
-        />
-
-        {/* GALLERY ITEMS CREDENTIALS */}
-        <Gallery 
-          gallery={gallery}
-          isAdmin={currentUser?.role === 'admin'}
-        />
-
-        {/* REVIEWS TESTIMONIAL CAROUSEL */}
-        <Testimonials testimonials={testimonials} />
-
-        {/* CONNECT CHANNELS FORM */}
-        <Contact settings={settings} />
-
+      {/* MAIN CONTENT SECTIONS */}
+      <main className="space-y-6">
+        {[
+          {
+            id: 'about',
+            divider: <SectionDivider icon="sparkles" label="01. Developer Profile" />,
+            component: <About experiences={experiences} onDownloadResume={handleDownloadResume} />
+          },
+          {
+            id: 'skills',
+            divider: <SectionDivider icon="orbit" label="02. Skill Galaxy" />,
+            component: <Skills />
+          },
+          {
+            id: 'projects',
+            divider: <SectionDivider icon="code" label="03. Engineering Projects" />,
+            component: <Projects />
+          },
+          {
+            id: 'blog',
+            divider: <SectionDivider icon="zap" label="04. Technical Writing" />,
+            component: <Blog />
+          },
+          {
+            id: 'gallery',
+            divider: <SectionDivider icon="sparkles" label="05. Activity Highlights" />,
+            component: <Gallery />
+          },
+          {
+            id: 'testimonials',
+            divider: <SectionDivider icon="orbit" label="06. Peer Testimonials" />,
+            component: <Testimonials />
+          },
+          {
+            id: 'contact',
+            divider: <SectionDivider icon="code" label="07. Get In Touch" />,
+            component: <Contact />
+          }
+        ].map((section, idx) => (
+          <motion.div
+            key={section.id}
+            initial={{ opacity: 0, y: 45 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ 
+              duration: 0.65, 
+              delay: (idx % 3) * 0.12, 
+              ease: [0.21, 0.47, 0.32, 0.98] 
+            }}
+          >
+            {section.divider}
+            {section.component}
+          </motion.div>
+        ))}
       </main>
 
-      {/* SYSTEM ADMINISTRATIVE OVERLAYS */}
+      {/* FOOTER */}
+      <Footer />
+
+      {/* ADMIN DASHBOARD MODAL */}
       {showAdmin && (
         <AdminDashboard 
-          onClose={() => setShowAdmin(false)}
           currentUser={currentUser}
-          onLogin={(u) => setCurrentUser(u)}
+          onLoginSuccess={handleLoginSuccess}
           onLogout={handleLogout}
-          projects={projects}
-          blogs={blogs}
-          settings={settings}
-          onReloadData={loadPortfolioData}
+          onClose={() => setShowAdmin(false)} 
         />
       )}
 
-      {/* FOOTER CREDENTIALS */}
-      <footer id="portfolio-main-footer" className="py-12 border-t border-zinc-200 bg-white/70 font-sans text-[11px] text-zinc-500 z-10 relative">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col gap-2 text-left max-w-sm">
-            <p className="font-bold text-zinc-800 text-xs">Mohd. Ashfaq Khan</p>
-            <p>© {new Date().getFullYear()} Mohd. Ashfaq Khan. Dedicated to crafting practical software solutions.</p>
-            <div className="flex items-center gap-3 mt-1 text-[10px]">
-              <span className="text-cyan-600">● React & Tailwind CSS</span>
-              <span>● Node.js Platform</span>
-            </div>
-          </div>
-          
-          <SubscribeForm />
-        </div>
-      </footer>
-
+      {/* RESUME VIEWER & DOWNLOAD MODAL */}
+      <ResumeModal 
+        isOpen={isResumeModalOpen} 
+        onClose={() => setIsResumeModalOpen(false)} 
+      />
     </div>
   );
 }

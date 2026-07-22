@@ -1,0 +1,80 @@
+MOHD. ASHFAQ KHAN
+Phone: +91-6387046100 | Email: khanashfaq21732@gmail.com
+LinkedIn: https://linkedin.com | GitHub: https://github.com/khanashfaq21732-dev
+
+================================================================================
+PROFESSIONAL SUMMARY
+================================================================================
+Computer Science undergraduate (B.Tech, expected 2027) with foundational skills
+in C and Python, and hands-on frontend development experience using HTML5, CSS3,
+and JavaScript. Built and presented a full working prototype — an Agri-Tech
+crop-monitoring and inventory system — that ranked top 15 of 44 teams at a
+university hackathon. Actively strengthening Data Structures & Algorithms and
+problem-solving ability, with a demonstrated track record of converting academic
+concepts into functioning, real-world applications. Seeking an entry-level software
+or frontend development role, or internship, to apply and grow these skills in a
+production environment.
+
+================================================================================
+CORE COMPETENCIES
+================================================================================
+C Programming | Python | HTML5 | CSS3 | JavaScript | Data Structures & Algorithms (DSA)
+Responsive Web Design | Modular Programming | VS Code | Google Colab | Problem Solving
+Debugging | Frontend Development | Web Application Prototyping
+
+================================================================================
+PROJECTS
+================================================================================
+1. Agri-Tech System – The Dasheri Shield
+   Web-based inventory and crop disease monitoring prototype
+   * Engineered a responsive frontend for a crop-disease monitoring and inventory
+     prototype using HTML5, CSS3, and JavaScript.
+   * Structured data-handling logic to simulate real-time crop health tracking and
+     digital storage records.
+   * Applied modular programming principles to improve code maintainability and
+     scalability across the prototype.
+   * Digitized manual tracking workflows, improving simulated logging efficiency
+     by approximately 30%.
+   * Competed among 44 university teams, placing in the top 15 for solution design
+     and execution.
+
+2. Personal Portfolio Website – AI Studio, Next.js, React.js, Tailwind CSS
+   AI-assisted personal portfolio and project showcase website
+   * Developed a modern, fully responsive personal portfolio website using AI Studio,
+     Next.js, React.js, and Tailwind CSS to showcase projects, technical skills,
+     achievements, certifications, and professional experience.
+   * Designed an interactive, mobile-first user interface with reusable React
+     components, smooth navigation, and responsive layouts for seamless cross-device
+     compatibility.
+   * Leveraged AI-assisted development workflows and modern UI tools to accelerate
+     development while maintaining high code quality, accessibility, SEO, and optimized
+     performance.
+   * Integrated project showcase, resume, GitHub, LinkedIn, and contact sections to
+     establish a professional online presence.
+   * Portfolio URL: https://ai.studio/apps/c1988ea7-c380-4757-8937-5c7736f7562e?fullscreenApplet=true
+
+================================================================================
+TECHNICAL DEVELOPMENT
+================================================================================
+* Actively practicing Data Structures & Algorithms to strengthen problem-solving ability.
+* Participated in university-level hackathons and collaborative coding projects.
+* Continuously learning backend fundamentals and system design concepts.
+
+================================================================================
+EDUCATION
+================================================================================
+* B.Tech in Computer Science — Shri Ramswaroop Memorial University (Expected 2027), CGPA: 6.54/10
+* Class XII (ISC) — S.T. Dominic Savio College — 57%
+* Class X (CISCE) — S.T. Dominic Savio College — 71.4%
+
+================================================================================
+ACHIEVEMENTS
+================================================================================
+* Ranked top 15 out of 44 teams in University Hackathon Competition.
+* Developed and presented a real-world Agri-Tech solution under competitive timelines.
+
+================================================================================
+ADDITIONAL INTERESTS
+================================================================================
+Video editing and content creation; enjoys applying creative and communication skills
+alongside technical work.

@@ -1,147 +1,158 @@
 'use client';
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
-import { Award, Image, ShieldAlert, X, Eye, Grid } from 'lucide-react';
-import { GalleryItem } from '../types';
+import { Camera, Trophy, Cpu, Users, Sparkles, ZoomIn, X } from 'lucide-react';
+import hackathonImg from '../assets/images/hackathon_presentation_1784736684419.jpg';
+import iotPrototypingImg from '../assets/images/iot_sensor_prototyping_1784736702347.jpg';
+import workshopImg from '../assets/images/software_engineering_workshop_1784736717917.jpg';
 
-interface GalleryProps {
-  gallery: GalleryItem[];
-  isAdmin: boolean;
-  onDeleteGalleryItem?: (id: string) => void;
-}
+export default function Gallery() {
+  const [activeModalImage, setActiveModalImage] = useState<{
+    src: string;
+    title: string;
+    category: string;
+    desc: string;
+  } | null>(null);
 
-export default function Gallery({ gallery, isAdmin, onDeleteGalleryItem }: GalleryProps) {
-  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'image' | 'certificate' | 'award'>('all');
-
-  const filters = [
-    { id: 'all', label: 'All Artifacts', icon: <Grid size={12} /> },
-    { id: 'image', label: 'Dashboard Designs', icon: <Image size={12} /> },
-    { id: 'certificate', label: 'Certificates', icon: <Award size={12} /> },
-    { id: 'award', label: 'Hackathon Awards', icon: <Award size={12} className="text-yellow-400" /> }
+  const photos = [
+    {
+      title: "Agri-Tech Hackathon Finalist Presentation",
+      category: "Hackathons",
+      desc: "Presenting Dasheri Shield IoT system to jury panel at university innovation challenge",
+      icon: Trophy,
+      image: hackathonImg,
+      fallbackUrl: '/assets/images/hackathon_presentation_1784736684419.jpg'
+    },
+    {
+      title: "IoT Sensor Node Prototyping",
+      category: "Hardware",
+      desc: "Calibrating temperature, humidity, and leaf wetness sensors for micro-climate telemetry",
+      icon: Cpu,
+      image: iotPrototypingImg,
+      fallbackUrl: '/assets/images/iot_sensor_prototyping_1784736702347.jpg'
+    },
+    {
+      title: "Software Engineering Workshop",
+      category: "Community",
+      desc: "Collaborating with fellow computer science developers on full-stack web applications",
+      icon: Users,
+      image: workshopImg,
+      fallbackUrl: '/assets/images/software_engineering_workshop_1784736717917.jpg'
+    }
   ];
 
-  const filteredItems = activeFilter === 'all' 
-    ? gallery 
-    : gallery.filter(item => item.type === activeFilter);
+  const getImgSrc = (photo: typeof photos[0]) => {
+    if (typeof photo.image === 'string') return photo.image;
+    return (photo.image as any)?.src || photo.fallbackUrl;
+  };
 
   return (
-    <section id="gallery-section" className="py-24 px-6 max-w-6xl mx-auto">
-      {/* SECTION HEADER */}
+    <section id="gallery-section" className="py-20 px-6 max-w-6xl mx-auto relative">
       <div className="text-center mb-16">
-        <h2 id="gallery-title" className="text-3xl md:text-5xl font-black tracking-tight text-zinc-900 font-sans">
-          Credentials & <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600">Visual Gallery</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 text-xs font-mono font-bold mb-4">
+          <Sparkles className="w-3.5 h-3.5 text-cyan-500 animate-pulse" />
+          <span>Visual Highlights</span>
+        </div>
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-zinc-900 font-sans">
+          Activity <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600">Gallery</span>
         </h2>
-        <div className="w-16 h-1.5 bg-amber-500 mx-auto rounded-full mt-4" />
-        <p className="text-xs font-mono text-zinc-400 mt-3 uppercase tracking-widest">
-          A showcase of verified awards and layout blueprints
-        </p>
+        <div className="w-16 h-1.5 bg-cyan-500 mx-auto rounded-full mt-4" />
+        <p className="text-sm text-zinc-500 mt-3 font-mono">Moments from hackathons, hardware labs, and tech events</p>
       </div>
 
-      {/* FILTER BUTTONS */}
-      <div id="gallery-filters" className="flex flex-wrap justify-center gap-2 mb-10">
-        {filters.map(filt => (
-          <button
-            key={filt.id}
-            onClick={() => setActiveFilter(filt.id as any)}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
-              activeFilter === filt.id
-                ? 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
-                : 'bg-transparent text-zinc-500 border-transparent hover:text-zinc-950 hover:bg-zinc-50'
-            }`}
-          >
-            {filt.icon}
-            {filt.label}
-          </button>
-        ))}
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {photos.map((item, idx) => {
+          const CategoryIcon = item.icon;
+          const imgSrc = getImgSrc(item);
 
-      {/* GALLERY GRID */}
-      <div id="gallery-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item) => (
-          <div
-            key={item.id}
-            id={`gallery-item-${item.id}`}
-            onClick={() => setSelectedItem(item)}
-            className="group rounded-2xl overflow-hidden aspect-video relative cursor-pointer glass-panel glass-panel-hover"
-          >
-            <img
-              src={item.url}
-              alt={item.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            {/* Hover overlay with detail expansion */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-              <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest mb-1">{item.type}</span>
-              <h4 className="text-sm font-bold text-white mb-1">{item.title}</h4>
-              {item.description && <p className="text-[11px] text-zinc-300 line-clamp-1 mb-2">{item.description}</p>}
-              
-              <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-amber-400">
-                <Eye size={12} />
-                <span>Expand Blueprint</span>
+          return (
+            <div 
+              key={idx} 
+              className="group relative p-5 rounded-2xl bg-white/80 backdrop-blur-xl border border-zinc-200/80 hover:border-cyan-400 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
+              onClick={() => setActiveModalImage({
+                src: imgSrc,
+                title: item.title,
+                category: item.category,
+                desc: item.desc
+              })}
+            >
+              {/* IMAGE CONTAINER WITH HOVER ZOOM EFFECT */}
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-4 bg-zinc-100 border border-zinc-200/60">
+                <img
+                  src={imgSrc}
+                  alt={item.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = item.fallbackUrl;
+                  }}
+                />
+
+                {/* OVERLAY BADGE & ZOOM ICON */}
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="p-2.5 rounded-full bg-white/90 text-zinc-900 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-1.5 text-xs font-mono font-bold">
+                    <ZoomIn size={16} className="text-cyan-600" />
+                    <span>Expand Image</span>
+                  </div>
+                </div>
+
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-zinc-900/80 backdrop-blur-md text-white text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-700/50 flex items-center gap-1.5">
+                  <CategoryIcon size={12} className="text-cyan-400" />
+                  {item.category}
+                </div>
+              </div>
+
+              {/* CARD DETAILS */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-mono uppercase font-bold text-cyan-600 tracking-wider">
+                  {item.category} Event
+                </span>
+                <h3 className="font-bold text-zinc-900 text-base group-hover:text-cyan-600 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-zinc-500 font-mono leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
             </div>
-
-            {/* Admin Delete Action */}
-            {isAdmin && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteGalleryItem && onDeleteGalleryItem(item.id);
-                }}
-                className="absolute top-2 left-2 p-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-white text-xs font-bold shadow-md z-20"
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* DETAILS VIEW LIGHTBOX */}
-      {selectedItem && (
-        <div
-          id="gallery-lightbox"
-          onClick={() => setSelectedItem(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4"
+      {/* FULLSCREEN LIGHTBOX MODAL */}
+      {activeModalImage && (
+        <div 
+          className="fixed inset-0 z-50 bg-zinc-950/85 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setActiveModalImage(null)}
         >
-          <div
+          <div 
+            className="w-full max-w-3xl bg-white rounded-3xl overflow-hidden shadow-2xl border border-zinc-200 relative animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
-            className="max-w-4xl w-full flex flex-col items-center rounded-2xl overflow-hidden relative text-zinc-800 glass-modal"
           >
-            {/* Close */}
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 p-1.5 text-zinc-500 hover:text-zinc-800 bg-white/80 hover:bg-zinc-100 rounded-xl transition-all cursor-pointer z-10 border border-zinc-200 shadow-sm"
-            >
-              <X size={18} />
-            </button>
-
-            {/* Expanded Image */}
-            <div className="w-full h-[65vh] bg-zinc-50 flex items-center justify-center border-b border-zinc-200">
-              <img
-                src={selectedItem.url}
-                alt={selectedItem.title}
+            <div className="relative w-full h-[360px] sm:h-[420px] bg-zinc-950">
+              <img 
+                src={activeModalImage.src} 
+                alt={activeModalImage.title}
                 referrerPolicy="no-referrer"
-                className="max-w-full max-h-full object-contain"
+                className="w-full h-full object-contain"
               />
+              <button
+                onClick={() => setActiveModalImage(null)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-zinc-900/80 hover:bg-zinc-900 text-white transition-colors cursor-pointer border border-zinc-700"
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            {/* Description details card footer */}
-            <div className="p-5 w-full text-left bg-zinc-50/90 border-t border-zinc-200">
-              <span className="text-[10px] font-mono text-amber-700 uppercase tracking-widest block mb-1">{selectedItem.type}</span>
-              <h3 className="text-base font-bold text-zinc-900 mb-1.5">{selectedItem.title}</h3>
-              {selectedItem.description && (
-                <p className="text-xs text-zinc-600 leading-relaxed font-sans">{selectedItem.description}</p>
-              )}
+            <div className="p-6 bg-white space-y-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-mono font-bold uppercase tracking-wider border border-cyan-200">
+                {activeModalImage.category}
+              </span>
+              <h3 className="text-xl font-black text-zinc-900">{activeModalImage.title}</h3>
+              <p className="text-xs font-mono text-zinc-600 leading-relaxed">{activeModalImage.desc}</p>
             </div>
-
           </div>
         </div>
       )}
