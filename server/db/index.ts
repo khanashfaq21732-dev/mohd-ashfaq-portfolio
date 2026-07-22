@@ -248,7 +248,7 @@ const defaultExperiences: Experience[] = [
     role: "Class XII (ISC)",
     company: "S.T. Dominic Savio College",
     location: "Lucknow, India",
-    period: "Completed 2023",
+    period: "Completed 2022",
     description: ["Focused on Physics, Chemistry, and Mathematics.", "Graduated with 57%."],
     type: "education"
   },
@@ -257,7 +257,7 @@ const defaultExperiences: Experience[] = [
     role: "Class X (CISCE)",
     company: "S.T. Dominic Savio College",
     location: "Lucknow, India",
-    period: "Completed 2021",
+    period: "Completed 2020",
     description: ["Studied general secondary subjects.", "Graduated with 71.4%."],
     type: "education"
   },

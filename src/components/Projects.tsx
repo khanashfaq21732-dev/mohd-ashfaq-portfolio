@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -8,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ExternalLink, Github, Filter, Code2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, X, AlertCircle, Thermometer, Droplets, Activity, ShieldAlert, Sparkles, Database, UploadCloud, Check, Zap, Eye, BookOpen, Trophy, Cpu } from 'lucide-react';
 import { Project } from '../types';
+import dasheriIotGridImg from '../assets/images/dasheri_iot_grid_1784626704159.jpg';
+import mangoFarmingDashImg from '../assets/images/mango_farming_dashboard_1784627790898.jpg';
 
 function DasheriShieldDashboard() {
   const [activeLeaf, setActiveLeaf] = useState<'healthy' | 'anthracnose' | 'mildew'>('healthy');
@@ -194,9 +194,16 @@ function DasheriShieldDashboard() {
       <div className="p-4 rounded-xl border border-zinc-200 bg-white/70 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-5 items-center animate-fade-in">
         <div className="md:col-span-2 overflow-hidden rounded-lg border border-zinc-200 aspect-[16/9] relative bg-zinc-50 group">
           <img
-            src={viewMode === 'blueprint' ? "/src/assets/images/dasheri_iot_grid_1784626704159.jpg" : "/src/assets/images/mango_farming_dashboard_1784627790898.jpg"}
+            src={viewMode === 'blueprint' ? dasheriIotGridImg : mangoFarmingDashImg}
             alt={viewMode === 'blueprint' ? "Dasheri Shield IoT Orchard Topology" : "Mango Farming Orchard Feed"}
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.src = viewMode === 'blueprint' 
+                ? 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80'
+                : 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=80';
+            }}
             className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
           />
           <div className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded text-[8px] font-mono font-bold flex items-center gap-1 shadow-sm ${
