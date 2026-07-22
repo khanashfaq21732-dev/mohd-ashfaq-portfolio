@@ -19,7 +19,9 @@ import {
   Subscriber
 } from '../../src/types';
 
-const DATA_DIR = path.join(process.cwd(), 'server', 'data');
+const DATA_DIR = process.env.VERCEL 
+  ? '/tmp' 
+  : path.join(process.cwd(), 'server', 'data');
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {

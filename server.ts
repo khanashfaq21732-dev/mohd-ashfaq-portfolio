@@ -537,6 +537,9 @@ router.get('/subscribers', requireAuth('admin'), (req, res) => {
 // Bind routing under /api prefix
 app.use('/api', router);
 
+// Export app for Vercel serverless function support
+export default app;
+
 // Setup static serving & Vite middleware integration
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
@@ -558,4 +561,7 @@ async function startServer() {
   });
 }
 
-startServer();
+// Only start standalone server if not deployed as Vercel serverless function
+if (!process.env.VERCEL) {
+  startServer();
+}
