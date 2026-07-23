@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { createServer as createViteServer } from 'vite';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const JWT_SECRET = 'ashfaq-portfolio-secret-key-2026';
 
 app.use(express.json());
@@ -235,8 +235,16 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use. Try running with PORT=3001 npm run dev or kill the process on port ${PORT}.`);
+    } else {
+      console.error('Server error:', err);
+    }
   });
 }
 
